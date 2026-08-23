@@ -22,26 +22,86 @@ O projeto nasce com foco em transformar o site atual em uma presença digital ma
 
 ## Stack definida
 
+### Fundação inicial
+
 | Área | Tecnologia | Uso no projeto |
 | --- | --- | --- |
 | Framework | **Astro** | Site institucional, páginas e renderização otimizada |
 | Linguagem | **TypeScript** | Tipagem e maior segurança no desenvolvimento |
-| Estilos | **Tailwind CSS + CSS customizado** | Design system e identidade visual própria |
+| Estilos | **Tailwind CSS 4 + CSS customizado** | Design system e identidade visual própria |
+| Tailwind | **Plugin oficial do Vite** | Integração moderna do Tailwind 4 com Astro |
 | Ícones | **Lucide Icons** | Ícones leves e consistentes |
-| Microinterações | **CSS / Tailwind** | Hover, estados, transições e movimentos simples |
-| Animações | **Motion JS** | Reveals, stagger, springs, `inView` e animações recorrentes |
-| Scroll avançado | **GSAP + ScrollTrigger** | Experiências pontuais de alto impacto e timelines de scroll |
-| Transições de página | **Astro View Transitions** | Navegação suave entre páginas e cases |
-| UI utilitária | **Shadcn UI (pontual)** | Primitivas como Dialog, Sheet e Accordion quando agregarem valor |
-| Referências visuais | **21st.dev / Aceternity / Magic UI** | Repertório e componentes especiais avaliados caso a caso |
 | Conteúdo | **Astro Content Collections** | Serviços, projetos e conteúdo estruturado |
-| Imagens do portfólio | **Cloudinary** | CDN, otimização e entrega responsiva de imagens quando necessário |
+| Validação | **Zod via `astro/zod`** | Schemas tipados para conteúdo |
 | Assets estruturais | **Astro Assets** | Logo, elementos visuais e imagens permanentes da interface |
 | SEO | **Astro + JSON-LD + Sitemap** | SEO técnico, local e dados estruturados |
 | Deploy | **Vercel** | Preview de branches/PRs e produção |
 | Versionamento | **GitHub** | Código, branches, Pull Requests e histórico |
 
-### Por que Astro?
+### Ferramentas aprovadas, mas instaladas somente quando necessárias
+
+| Área | Tecnologia | Uso previsto |
+| --- | --- | --- |
+| Microinterações | **CSS / Tailwind** | Hover, estados, transições e movimentos simples |
+| Animações JS | **Motion** | Reveals, stagger, springs e animações de viewport |
+| Scroll avançado | **GSAP + ScrollTrigger** | Experiências pontuais de alto impacto |
+| Transições de página | **View Transitions do Astro / navegador** | Navegação fluida entre páginas e cases |
+| Client-side routing | **`ClientRouter`**, somente se necessário | Transições avançadas quando a navegação nativa não for suficiente |
+| UI utilitária | **Shadcn UI**, pontual | Dialog, Sheet, Accordion e outras primitivas |
+| Referências visuais | **21st.dev / Aceternity / Magic UI** | Inspiração e componentes especiais avaliados caso a caso |
+| CDN de imagens | **Cloudinary**, quando necessário | Portfólio com grande volume de mídia |
+| CMS futuro | **Sanity**, se necessário | Autonomia para o cliente cadastrar conteúdo |
+
+> **Ferramenta aprovada não significa dependência obrigatória.** Motion, GSAP, Cloudinary, ClientRouter, Shadcn e outras bibliotecas só entram no projeto quando houver uma necessidade concreta.
+
+---
+
+## Ambiente de desenvolvimento
+
+A fundação do projeto deverá ser reproduzível entre desenvolvimento local, CI e Vercel.
+
+### Padrão inicial
+
+```text
+Node.js: >= 22.12
+Gerenciador: pnpm 10
+Lockfile: pnpm-lock.yaml
+Astro: versão estável definida no package.json
+Tailwind CSS: v4 via plugin oficial do Vite
+```
+
+Após a inicialização do projeto, as versões efetivamente instaladas serão registradas no `package.json` e no `pnpm-lock.yaml`.
+
+O `package.json` deverá registrar o package manager e a versão mínima do Node, por exemplo:
+
+```json
+{
+  "engines": {
+    "node": ">=22.12"
+  },
+  "packageManager": "pnpm@10"
+}
+```
+
+### Tailwind CSS 4
+
+Para Astro moderno, o Tailwind 4 será configurado pelo plugin oficial do Vite, preferencialmente usando:
+
+```bash
+pnpm astro add tailwind
+```
+
+O CSS global utilizará:
+
+```css
+@import "tailwindcss";
+```
+
+Não planejamos utilizar a integração legada `@astrojs/tailwind` para Tailwind 3.
+
+---
+
+## Por que Astro?
 
 A Studio precisa, neste momento, de um site predominantemente institucional e comercial, com forte presença visual, portfólio, páginas de serviços, SEO local e poucos componentes realmente interativos.
 
@@ -62,6 +122,7 @@ studio-comunicacao-visual/
 │   ├── assets/
 │   │   ├── brand/
 │   │   ├── company/
+│   │   ├── placeholders/
 │   │   └── ui/
 │   │
 │   ├── components/
@@ -97,16 +158,86 @@ studio-comunicacao-visual/
 │   ├── styles/
 │   │   └── global.css
 │   │
-│   └── utils/
-│       ├── seo.ts
-│       └── whatsapp.ts
+│   ├── utils/
+│   │   ├── seo.ts
+│   │   └── whatsapp.ts
+│   │
+│   └── content.config.ts
 │
 ├── astro.config.mjs
 ├── package.json
+├── pnpm-lock.yaml
 └── README.md
 ```
 
 A estrutura pode sofrer ajustes conforme o projeto evoluir. O objetivo é manter componentes, conteúdo e regras de negócio desacoplados.
+
+---
+
+## Content Collections
+
+As collections serão configuradas em **`src/content.config.ts`**, seguindo a arquitetura atual do Astro Content Layer.
+
+As duas collections iniciais serão:
+
+```text
+projects
+services
+```
+
+Cada collection deverá possuir:
+
+- `loader` explícito;
+- schema com Zod;
+- campos obrigatórios e opcionais bem definidos;
+- validação durante desenvolvimento/build;
+- conteúdo separado da camada visual.
+
+Exemplo de fundação:
+
+```ts
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
+
+const projects = defineCollection({
+  loader: glob({
+    base: "./src/content/projects",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    category: z.string(),
+    cover: z.string(),
+    gallery: z.array(z.string()).default([]),
+    services: z.array(z.string()).default([]),
+    location: z.string().optional(),
+    year: z.number().optional(),
+    featured: z.boolean().default(false),
+  }),
+});
+
+const services = defineCollection({
+  loader: glob({
+    base: "./src/content/services",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    shortDescription: z.string(),
+    featured: z.boolean().default(false),
+  }),
+});
+
+export const collections = {
+  projects,
+  services,
+};
+```
+
+Os schemas serão refinados conforme recebermos os dados reais da Studio.
 
 ---
 
@@ -172,6 +303,8 @@ type Project = {
 
 As imagens permanentes da interface ficam no projeto. As imagens do portfólio poderão ser servidas por **Cloudinary** quando o volume de mídia justificar o uso de CDN e otimização externa, evitando transformar o repositório Git em um armazenamento de centenas de arquivos pesados.
 
+Cloudinary **não é obrigatório na instalação inicial**. Enquanto o volume de imagens for pequeno, Astro Assets poderá atender o projeto.
+
 ### Imagens provisórias durante o desenvolvimento
 
 Enquanto o acervo definitivo da Studio ainda estiver sendo organizado, o projeto poderá utilizar imagens do **Unsplash** e do **Pexels** como material provisório para construção e validação do layout.
@@ -185,7 +318,7 @@ Essas imagens serão usadas principalmente para:
 
 As imagens de banco **não deverão ser apresentadas como trabalhos realizados pela Studio**. Cards de portfólio e cases publicados em produção deverão priorizar projetos reais da empresa, devidamente identificados e aprovados.
 
-Sempre que possível, as imagens provisórias serão baixadas, organizadas no projeto e otimizadas para a Web, evitando dependência de hotlinks externos. Antes da publicação final, o objetivo é substituir o máximo possível desse material por fotografias reais da Studio, sua estrutura, equipe, processos e projetos executados.
+Sempre que possível, as imagens provisórias serão baixadas, organizadas no projeto e otimizadas para a Web, evitando dependência de hotlinks externos.
 
 Fluxo esperado:
 
@@ -201,17 +334,6 @@ Recebimento e organização das fotos reais da Studio
 Astro Assets ou Cloudinary, conforme volume e necessidade
   ↓
 Otimização e publicação
-```
-
-Para o portfólio definitivo:
-
-```text
-Projeto
-  ├── capa
-  ├── categoria
-  ├── descrição
-  ├── serviços realizados
-  └── galeria de imagens
 ```
 
 A entrega das imagens deverá priorizar:
@@ -299,12 +421,25 @@ Princípios:
 
 O projeto buscará um nível visual premium sem transformar a aplicação Astro em uma coleção pesada de componentes React ou bibliotecas usadas sem necessidade.
 
+### Instalação inicial
+
+A fundação não precisa instalar Motion, GSAP ou um client-side router.
+
+```text
+Astro
++ TypeScript
++ Tailwind CSS 4
++ Lucide Icons
+```
+
+As dependências de animação serão adicionadas somente quando a implementação demonstrar necessidade.
+
 ### Ordem de preferência
 
 ```text
 CSS / Tailwind
       ↓
-Motion JS
+Motion
       ↓
 GSAP + ScrollTrigger
       ↓
@@ -322,32 +457,35 @@ Será a primeira escolha para:
 - estados de foco;
 - microinterações simples.
 
-### Motion JS
+### Motion
 
-Será a biblioteca principal para animações JavaScript recorrentes, como:
+Quando necessário, será a primeira biblioteca considerada para animações JavaScript recorrentes, como:
 
 - entrada de seções na viewport;
 - reveal de textos e imagens;
 - stagger de cards;
 - springs;
-- animações com `inView`;
 - interações que exigem mais controle do que CSS puro.
 
 ### GSAP + ScrollTrigger
 
-Será reservado para poucas experiências de alto impacto, por exemplo:
+Será instalado somente se houver uma experiência cuja complexidade justifique seu uso, por exemplo:
 
-- uma seção especial de projetos;
 - storytelling por scroll;
-- antes/depois ou transformação visual;
+- uma seção especial de projetos;
 - timelines sincronizadas com rolagem;
-- pin/scrub quando houver justificativa de UX.
+- pin/scrub;
+- transformações visuais complexas.
 
-A intenção é ter **1 ou 2 momentos memoráveis**, e não animar todas as seções com GSAP.
+A intenção é ter **1 ou 2 momentos memoráveis**, se fizer sentido, e não animar todas as seções com GSAP.
 
-### Astro View Transitions
+### View Transitions
 
-Será considerado para tornar a navegação entre páginas e cases mais fluida, especialmente na transição entre um card do portfólio e a página individual do projeto.
+A preferência inicial é utilizar os recursos nativos de navegação e View Transitions disponíveis no navegador/Astro quando forem suficientes.
+
+O **`ClientRouter` não entra automaticamente na fundação**. Ele só deverá ser introduzido se o projeto realmente precisar de navegação client-side e transições avançadas que não sejam atendidas pela abordagem mais simples.
+
+Caso `ClientRouter` seja adotado, scripts interativos deverão respeitar o ciclo de navegação do Astro e ser inicializados de forma compatível com eventos como `astro:page-load` quando necessário.
 
 ### Shadcn UI
 
@@ -385,19 +523,19 @@ Pode ser Astro + CSS?
         └── Não → simplificar a solução
 ```
 
-Isso permite aproveitar boas referências sem perder a principal vantagem arquitetural do Astro: **enviar pouco JavaScript ao cliente**.
-
 ### Dependências que não entram por padrão
 
 Não serão adicionados inicialmente apenas por tendência ou conveniência:
 
+- Motion;
+- GSAP;
+- ClientRouter;
+- React;
 - Lenis;
 - Three.js;
 - Swiper;
 - bibliotecas completas de efeitos visuais;
 - múltiplos runtimes de UI sem necessidade.
-
-Essas ferramentas só serão consideradas se resolverem um problema real de experiência ou implementação.
 
 ### Regra de ouro para animações
 
@@ -470,7 +608,7 @@ A arquitetura será preparada para evoluir sem obrigar o site institucional a vi
 ```text
 Astro
 + Content Collections
-+ Cloudinary quando necessário
++ Astro Assets / Cloudinary quando necessário
 + Git
 ```
 
@@ -507,14 +645,15 @@ Isso evita adicionar complexidade ao site atual antes de existir uma necessidade
 1. **Performance antes de efeitos visuais desnecessários.**
 2. **JavaScript somente onde houver necessidade real.**
 3. **Conteúdo e componentes desacoplados.**
-4. **Imagens tratadas como parte crítica da experiência.**
-5. **Mobile como prioridade, não adaptação tardia.**
-6. **SEO pensado durante o desenvolvimento.**
-7. **Acessibilidade incorporada à implementação.**
-8. **Sem banco de dados ou backend sem uma necessidade concreta.**
-9. **Sem dependências adicionadas apenas por conveniência.**
-10. **Cada seção deve contribuir para informação, confiança ou conversão.**
-11. **Bibliotecas de UI e animação devem ser usadas seletivamente, sem diluir a identidade da Studio.**
+4. **Content Collections sempre com loaders explícitos e schemas validados.**
+5. **Imagens tratadas como parte crítica da experiência.**
+6. **Mobile como prioridade, não adaptação tardia.**
+7. **SEO pensado durante o desenvolvimento.**
+8. **Acessibilidade incorporada à implementação.**
+9. **Sem banco de dados ou backend sem uma necessidade concreta.**
+10. **Sem dependências adicionadas apenas por conveniência.**
+11. **Cada seção deve contribuir para informação, confiança ou conversão.**
+12. **Versões e ambiente devem ser reproduzíveis via `package.json` + lockfile.**
 
 ---
 
@@ -524,13 +663,16 @@ Isso evita adicionar complexidade ao site atual antes de existir uma necessidade
 - [x] Objetivo inicial definido
 - [x] Stack principal definida
 - [x] Arquitetura inicial definida
-- [x] Estratégia de imagens provisórias definida
 - [x] Estratégia de UI e animações definida
+- [x] Estratégia inicial de imagens definida
+- [x] Padrão de Content Collections definido
+- [x] Ambiente alvo definido: Node + pnpm + lockfile
 - [ ] Inicializar projeto Astro
-- [ ] Configurar TypeScript e Tailwind CSS
+- [ ] Configurar `package.json` e `pnpm-lock.yaml`
+- [ ] Configurar Tailwind CSS 4 via Vite
+- [ ] Criar `src/content.config.ts`
+- [ ] Criar schemas de `projects` e `services`
 - [ ] Criar design tokens
-- [ ] Configurar Content Collections
-- [ ] Configurar estratégia definitiva de imagens
 - [ ] Implementar Header e Hero
 - [ ] Implementar serviços
 - [ ] Implementar portfólio
