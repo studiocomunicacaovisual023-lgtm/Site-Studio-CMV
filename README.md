@@ -167,7 +167,38 @@ type Project = {
 
 As imagens permanentes da interface ficam no projeto. As imagens do portfólio serão preferencialmente servidas por **Cloudinary**, evitando transformar o repositório Git em um armazenamento de centenas de arquivos pesados.
 
+### Imagens provisórias durante o desenvolvimento
+
+Enquanto o acervo definitivo da Studio ainda estiver sendo organizado, o projeto poderá utilizar imagens do **Unsplash** e do **Pexels** como material provisório para construção e validação do layout.
+
+Essas imagens serão usadas principalmente para:
+
+- testar composição, proporções e responsividade;
+- desenvolver Hero, serviços e seções institucionais;
+- validar cards, grids e comportamento visual da galeria;
+- apresentar previews antes da substituição pelo acervo definitivo.
+
+As imagens de banco **não deverão ser apresentadas como trabalhos realizados pela Studio**. Cards de portfólio e cases publicados em produção deverão priorizar projetos reais da empresa, devidamente identificados e aprovados.
+
+Sempre que possível, as imagens provisórias serão baixadas, organizadas no projeto e otimizadas para a Web, evitando dependência de hotlinks externos. Antes da publicação final, o objetivo é substituir o máximo possível desse material por fotografias reais da Studio, sua estrutura, equipe, processos e projetos executados.
+
 Fluxo esperado:
+
+```text
+Desenvolvimento
+  ↓
+Unsplash / Pexels como material provisório
+  ↓
+Validação do layout
+  ↓
+Recebimento e organização das fotos reais da Studio
+  ↓
+Cloudinary
+  ↓
+Otimização e publicação
+```
+
+Para o portfólio definitivo:
 
 ```text
 Projeto
