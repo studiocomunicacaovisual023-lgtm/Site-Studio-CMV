@@ -28,9 +28,14 @@ O projeto nasce com foco em transformar o site atual em uma presença digital ma
 | Linguagem | **TypeScript** | Tipagem e maior segurança no desenvolvimento |
 | Estilos | **Tailwind CSS + CSS customizado** | Design system e identidade visual própria |
 | Ícones | **Lucide Icons** | Ícones leves e consistentes |
-| Animações | **CSS + GSAP pontual** | Microinterações e animações apenas onde agregarem valor |
+| Microinterações | **CSS / Tailwind** | Hover, estados, transições e movimentos simples |
+| Animações | **Motion JS** | Reveals, stagger, springs, `inView` e animações recorrentes |
+| Scroll avançado | **GSAP + ScrollTrigger** | Experiências pontuais de alto impacto e timelines de scroll |
+| Transições de página | **Astro View Transitions** | Navegação suave entre páginas e cases |
+| UI utilitária | **Shadcn UI (pontual)** | Primitivas como Dialog, Sheet e Accordion quando agregarem valor |
+| Referências visuais | **21st.dev / Aceternity / Magic UI** | Repertório e componentes especiais avaliados caso a caso |
 | Conteúdo | **Astro Content Collections** | Serviços, projetos e conteúdo estruturado |
-| Imagens do portfólio | **Cloudinary** | CDN, otimização e entrega responsiva de imagens |
+| Imagens do portfólio | **Cloudinary** | CDN, otimização e entrega responsiva de imagens quando necessário |
 | Assets estruturais | **Astro Assets** | Logo, elementos visuais e imagens permanentes da interface |
 | SEO | **Astro + JSON-LD + Sitemap** | SEO técnico, local e dados estruturados |
 | Deploy | **Vercel** | Preview de branches/PRs e produção |
@@ -165,7 +170,7 @@ type Project = {
 
 ### Imagens
 
-As imagens permanentes da interface ficam no projeto. As imagens do portfólio serão preferencialmente servidas por **Cloudinary**, evitando transformar o repositório Git em um armazenamento de centenas de arquivos pesados.
+As imagens permanentes da interface ficam no projeto. As imagens do portfólio poderão ser servidas por **Cloudinary** quando o volume de mídia justificar o uso de CDN e otimização externa, evitando transformar o repositório Git em um armazenamento de centenas de arquivos pesados.
 
 ### Imagens provisórias durante o desenvolvimento
 
@@ -193,7 +198,7 @@ Validação do layout
   ↓
 Recebimento e organização das fotos reais da Studio
   ↓
-Cloudinary
+Astro Assets ou Cloudinary, conforme volume e necessidade
   ↓
 Otimização e publicação
 ```
@@ -206,7 +211,7 @@ Projeto
   ├── categoria
   ├── descrição
   ├── serviços realizados
-  └── galeria de imagens → Cloudinary CDN
+  └── galeria de imagens
 ```
 
 A entrega das imagens deverá priorizar:
@@ -290,6 +295,124 @@ Princípios:
 
 ---
 
+## Estratégia de UI e animações
+
+O projeto buscará um nível visual premium sem transformar a aplicação Astro em uma coleção pesada de componentes React ou bibliotecas usadas sem necessidade.
+
+### Ordem de preferência
+
+```text
+CSS / Tailwind
+      ↓
+Motion JS
+      ↓
+GSAP + ScrollTrigger
+      ↓
+React Island somente se a interação realmente justificar
+```
+
+### CSS / Tailwind
+
+Será a primeira escolha para:
+
+- hover de cards e botões;
+- transições de cor e borda;
+- pequenos deslocamentos e escalas;
+- overlays e zoom sutil de imagens;
+- estados de foco;
+- microinterações simples.
+
+### Motion JS
+
+Será a biblioteca principal para animações JavaScript recorrentes, como:
+
+- entrada de seções na viewport;
+- reveal de textos e imagens;
+- stagger de cards;
+- springs;
+- animações com `inView`;
+- interações que exigem mais controle do que CSS puro.
+
+### GSAP + ScrollTrigger
+
+Será reservado para poucas experiências de alto impacto, por exemplo:
+
+- uma seção especial de projetos;
+- storytelling por scroll;
+- antes/depois ou transformação visual;
+- timelines sincronizadas com rolagem;
+- pin/scrub quando houver justificativa de UX.
+
+A intenção é ter **1 ou 2 momentos memoráveis**, e não animar todas as seções com GSAP.
+
+### Astro View Transitions
+
+Será considerado para tornar a navegação entre páginas e cases mais fluida, especialmente na transição entre um card do portfólio e a página individual do projeto.
+
+### Shadcn UI
+
+O Shadcn poderá ser utilizado de forma pontual para primitivas de interface que já possuem comportamento e acessibilidade bem definidos, como:
+
+- Dialog;
+- Sheet;
+- Accordion;
+- Tabs;
+- Tooltip.
+
+Hero, cards de serviços, portfólio, CTAs e demais componentes de marca deverão ser prioritariamente **customizados para a Studio**.
+
+### 21st.dev, Aceternity e Magic UI
+
+Serão tratados principalmente como **repertório visual e fonte de componentes especiais**, não como fundação do projeto.
+
+Ao encontrar um componente interessante, a decisão seguirá esta lógica:
+
+```text
+Componente interessante
+        ↓
+Pode ser Astro + CSS?
+        ├── Sim → implementar nativamente
+        │
+        └── Não
+             ↓
+        Motion resolve?
+        ├── Sim → Astro + Motion
+        │
+        └── Não
+             ↓
+        A complexidade justifica React?
+        ├── Sim → React Island isolada
+        └── Não → simplificar a solução
+```
+
+Isso permite aproveitar boas referências sem perder a principal vantagem arquitetural do Astro: **enviar pouco JavaScript ao cliente**.
+
+### Dependências que não entram por padrão
+
+Não serão adicionados inicialmente apenas por tendência ou conveniência:
+
+- Lenis;
+- Three.js;
+- Swiper;
+- bibliotecas completas de efeitos visuais;
+- múltiplos runtimes de UI sem necessidade.
+
+Essas ferramentas só serão consideradas se resolverem um problema real de experiência ou implementação.
+
+### Regra de ouro para animações
+
+Uma animação deve contribuir para pelo menos um destes objetivos:
+
+1. direcionar a atenção;
+2. ajudar a compreender o conteúdo;
+3. valorizar um projeto realizado;
+4. aumentar a percepção de qualidade;
+5. melhorar navegação e feedback de interação.
+
+Se não cumprir nenhum desses papéis, a preferência será não animar.
+
+---
+
 ## Fluxo de desenvolvimento
 
 ```text
@@ -347,7 +470,7 @@ A arquitetura será preparada para evoluir sem obrigar o site institucional a vi
 ```text
 Astro
 + Content Collections
-+ Cloudinary
++ Cloudinary quando necessário
 + Git
 ```
 
@@ -391,6 +514,7 @@ Isso evita adicionar complexidade ao site atual antes de existir uma necessidade
 8. **Sem banco de dados ou backend sem uma necessidade concreta.**
 9. **Sem dependências adicionadas apenas por conveniência.**
 10. **Cada seção deve contribuir para informação, confiança ou conversão.**
+11. **Bibliotecas de UI e animação devem ser usadas seletivamente, sem diluir a identidade da Studio.**
 
 ---
 
@@ -400,11 +524,13 @@ Isso evita adicionar complexidade ao site atual antes de existir uma necessidade
 - [x] Objetivo inicial definido
 - [x] Stack principal definida
 - [x] Arquitetura inicial definida
+- [x] Estratégia de imagens provisórias definida
+- [x] Estratégia de UI e animações definida
 - [ ] Inicializar projeto Astro
 - [ ] Configurar TypeScript e Tailwind CSS
 - [ ] Criar design tokens
 - [ ] Configurar Content Collections
-- [ ] Configurar estratégia de imagens
+- [ ] Configurar estratégia definitiva de imagens
 - [ ] Implementar Header e Hero
 - [ ] Implementar serviços
 - [ ] Implementar portfólio
