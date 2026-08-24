@@ -5,6 +5,9 @@ import sharp from "sharp";
 
 const homepagePath = resolve("dist/index.html");
 
+const readSource = (path: string) =>
+  existsSync(path) ? readFileSync(path, "utf8") : "";
+
 describe("homepage comercial", () => {
   it("publica a proposta central e as principais etapas da jornada", () => {
     expect(existsSync(homepagePath), "execute o build antes do teste").toBe(true);
@@ -35,11 +38,66 @@ describe("homepage comercial", () => {
 
     const html = readFileSync(homepagePath, "utf8");
 
-    expect(html).toContain("data-motion-root");
+    expect(html).toContain("data-gsap-hero");
     expect(html.match(/data-title-line/g)).toHaveLength(3);
     expect(html).toContain("data-reveal");
     expect(html).toContain("Imagem de referência");
     expect(html).not.toContain("Acervo em validação");
+  });
+
+  it("carrega GSAP somente na Home com escopo e limpeza explícitos", () => {
+    const packageJson = JSON.parse(readFileSync(resolve("package.json"), "utf8"));
+    const indexSource = readFileSync(resolve("src/pages/index.astro"), "utf8");
+    const motionSource = readSource(
+      resolve("src/features/motion/home-motion.ts"),
+    );
+
+    expect(packageJson.dependencies.gsap).toMatch(/^3\./);
+    expect(indexSource).toContain('import HomeMotion from "../components/ui/HomeMotion.astro"');
+    expect(indexSource).toContain("<HomeMotion />");
+    expect(motionSource).toContain('from "gsap"');
+    expect(motionSource).toContain('from "gsap/ScrollTrigger"');
+    expect(motionSource).toContain("gsap.registerPlugin(ScrollTrigger)");
+    expect(motionSource).toContain("gsap.matchMedia");
+    expect(motionSource).toContain("prefers-reduced-motion: no-preference");
+    expect(motionSource).toContain("context.conditions?.allowMotion ?? false");
+    expect(motionSource).toContain("motionMedia.revert()");
+  });
+
+  it("orquestra entrada e profundidade da Hero sem sequestrar o scroll", () => {
+    const heroSource = readFileSync(
+      resolve("src/components/sections/Hero.astro"),
+      "utf8",
+    );
+    const motionSource = readSource(
+      resolve("src/features/motion/home-motion.ts"),
+    );
+
+    expect(heroSource).toContain("data-gsap-hero");
+    expect(heroSource).toContain("data-gsap-hero-card");
+    expect(heroSource).toContain("data-gsap-hero-proof");
+    expect(heroSource).not.toContain("data-motion-root");
+    expect(motionSource).toContain("scrub: 0.6");
+    expect(motionSource).toContain("heroParallaxYPercent");
+    expect(motionSource).not.toContain("pin: true");
+  });
+
+  it("narra o Processo com linha progressiva e etapas escalonadas", () => {
+    const processSource = readFileSync(
+      resolve("src/components/sections/Process.astro"),
+      "utf8",
+    );
+    const motionSource = readSource(
+      resolve("src/features/motion/home-motion.ts"),
+    );
+
+    expect(processSource).toContain("data-gsap-process");
+    expect(processSource).toContain("data-gsap-process-track");
+    expect(processSource).toContain("data-gsap-process-step");
+    expect(processSource).toContain("--process-line-progress");
+    expect(motionSource).toContain('start: "top 72%"');
+    expect(motionSource).toContain("stagger: 0.11");
+    expect(motionSource).toContain("once: true");
   });
 
   it("usa imagens provisórias adequadas para os novos cards", async () => {
