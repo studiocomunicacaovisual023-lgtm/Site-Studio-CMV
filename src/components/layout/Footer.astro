@@ -1,0 +1,202 @@
+---
+import { Mail, MapPin, MessageCircle, Phone } from "@lucide/astro";
+import { Image } from "astro:assets";
+import studioSymbol from "../../assets/company/studio-symbol.png";
+import { company, whatsappUrl } from "../../config/company";
+import InstagramIcon from "../ui/InstagramIcon.astro";
+
+const navigation = [
+  { label: "Início", href: "#inicio" },
+  { label: "Serviços", href: "#servicos" },
+  { label: "Projetos", href: "#projetos" },
+  { label: "Processo", href: "#processo" },
+  { label: "A Studio", href: "#sobre" },
+  { label: "Contato", href: "#contato" },
+];
+---
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="brand-column">
+      <a class="brand" href="#inicio" aria-label="Studio Comunicação Visual — voltar ao início">
+        <Image src={studioSymbol} alt="" width={54} height={54} loading="lazy" />
+        <span><strong>Studio</strong><small>Comunicação visual</small></span>
+      </a>
+      <p>Soluções que colocam sua marca no lugar certo: em evidência.</p>
+    </div>
+
+    <nav aria-label="Navegação do rodapé">
+      <h2>Navegação</h2>
+      {navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+
+    <div class="services-column">
+      <h2>Serviços</h2>
+      <span>Fachadas</span>
+      <span>Letras-caixa</span>
+      <span>Adesivação</span>
+      <span>Impressão digital</span>
+      <span>Sinalização</span>
+      <span>Acrílico e corte a laser</span>
+      <span>Gráfica rápida</span>
+      <span>Brindes personalizados</span>
+    </div>
+
+    <address>
+      <h2>Contato</h2>
+      <a href={`tel:${company.phoneHref}`}><Phone aria-hidden="true" size={15} /> {company.phoneDisplay}</a>
+      <a href={whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle aria-hidden="true" size={15} /> WhatsApp</a>
+      <a href={company.instagramUrl} target="_blank" rel="noreferrer"><InstagramIcon size={15} /> {company.instagramHandle}</a>
+      <a href={`mailto:${company.email}`}><Mail aria-hidden="true" size={15} /> {company.email}</a>
+      <a href={company.mapsUrl} target="_blank" rel="noreferrer"><MapPin aria-hidden="true" size={15} /> <span>{company.address.street}, {company.address.district}<br />{company.address.city} — {company.address.region}</span></a>
+    </address>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {new Date().getFullYear()} {company.name}. Todos os direitos reservados.</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding: 4.5rem 0 1.5rem;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    background: #03070d;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.65fr 0.8fr 1.15fr;
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .brand :global(img) {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .brand > span {
+    display: grid;
+    line-height: 1;
+  }
+
+  .brand strong {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    letter-spacing: -0.05em;
+  }
+
+  .brand small {
+    margin-top: 0.3rem;
+    color: #8795a8;
+    font-size: 0.7rem;
+    font-weight: 760;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .brand-column > p {
+    max-width: 18rem;
+    margin: 1.1rem 0 0;
+    color: #8795a8;
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  h2 {
+    margin: 0 0 0.9rem;
+    color: #dce3ec;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  nav,
+  .services-column,
+  address {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    font-style: normal;
+  }
+
+  nav a,
+  .services-column span,
+  address a,
+  address > span {
+    margin-top: 0.48rem;
+    color: #929fb0;
+    font-size: 0.78rem;
+    transition: color 160ms ease;
+  }
+
+  nav a:hover,
+  address a:hover {
+    color: white;
+  }
+
+  address a,
+  address > span {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  address :global(svg) {
+    flex-shrink: 0;
+    margin-top: 0.13rem;
+    color: #4faaff;
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 3.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(255 255 255 / 0.07);
+    color: #8290a4;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 50rem) {
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 32rem) {
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2.25rem 1.5rem;
+    }
+
+    .brand-column,
+    address {
+      grid-column: 1 / -1;
+    }
+
+    .footer-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 22rem) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .brand-column,
+    address {
+      grid-column: auto;
+    }
+  }
+</style>

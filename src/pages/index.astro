@@ -1,0 +1,38 @@
+---
+import { getCollection } from "astro:content";
+import Footer from "../components/layout/Footer.astro";
+import Header from "../components/layout/Header.astro";
+import About from "../components/sections/About.astro";
+import Clients from "../components/sections/Clients.astro";
+import ContactCta from "../components/sections/ContactCta.astro";
+import Hero from "../components/sections/Hero.astro";
+import Process from "../components/sections/Process.astro";
+import Projects from "../components/sections/Projects.astro";
+import Services from "../components/sections/Services.astro";
+import MobileQuoteCta from "../components/ui/MobileQuoteCta.astro";
+import PageSignal from "../components/ui/PageSignal.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const services = (await getCollection("services")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const projects = (await getCollection("projects", ({ data }) => data.featured)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<BaseLayout>
+  <Header />
+  <PageSignal />
+  <main id="conteudo">
+    <Hero />
+    <Services services={services} />
+    <Projects projects={projects} />
+    <Process />
+    <About />
+    <Clients />
+    <ContactCta />
+  </main>
+  <MobileQuoteCta />
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,159 @@
+---
+import { ArrowUpRight, MessageCircleMore } from "@lucide/astro";
+import { company, whatsappUrl } from "../../config/company";
+---
+
+<section class="contact" id="contato" aria-labelledby="contact-title">
+  <div class="container contact-shell" data-reveal>
+    <span class="contact-index" aria-hidden="true">07 / CONTATO</span>
+    <div>
+      <p>Tem uma ideia em mente?</p>
+      <h2 id="contact-title">Vamos transformar em impacto visual.</h2>
+    </div>
+    <a href={whatsappUrl} target="_blank" rel="noreferrer">
+      <span class="whatsapp-icon"><MessageCircleMore aria-hidden="true" size={23} stroke-width={1.7} /></span>
+      <span><small>Resposta direta pelo</small>WhatsApp</span>
+      <ArrowUpRight aria-hidden="true" size={22} />
+    </a>
+    <p class="availability">
+      Solicite seu orçamento sem compromisso <span>•</span> {company.address.city}, {company.address.region}
+    </p>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(4rem, 8vw, 6.5rem);
+    background: #f3f6fa;
+    color: white;
+  }
+
+  .contact-shell {
+    position: relative;
+    display: grid;
+    align-items: center;
+    padding: clamp(2rem, 5vw, 4.5rem);
+    border-radius: 1.35rem;
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px) 0 0 / 7rem 100%,
+      linear-gradient(135deg, #0758cc, #0878f9 52%, #043d9e);
+    box-shadow: 0 32px 80px -34px rgb(8 120 249 / 0.7);
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem 4rem;
+  }
+
+  .contact-shell::after {
+    position: absolute;
+    top: -10rem;
+    right: 10%;
+    width: 26rem;
+    height: 26rem;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: 50%;
+    content: "";
+  }
+
+  .contact-index {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    color: rgb(255 255 255 / 0.46);
+    font-size: 0.55rem;
+    font-weight: 760;
+    letter-spacing: 0.14em;
+  }
+
+  .contact-shell > div,
+  .contact-shell > a,
+  .availability {
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-shell > div p {
+    margin: 0 0 0.45rem;
+    color: #b8d9ff;
+    font-size: 0.72rem;
+    font-weight: 780;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 15ch;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.3vw, 4rem);
+    font-weight: 650;
+    letter-spacing: -0.065em;
+    line-height: 1;
+  }
+
+  .contact-shell > a {
+    display: grid;
+    min-width: min(100%, 18.5rem);
+    align-items: center;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    padding: 0.8rem;
+    border: 1px solid rgb(255 255 255 / 0.42);
+    border-radius: 0.9rem;
+    background: white;
+    color: #07101b;
+    box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.38);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .contact-shell > a:hover {
+    box-shadow: 0 25px 60px -20px rgb(0 0 0 / 0.5);
+    transform: translateY(-3px);
+  }
+
+  .whatsapp-icon {
+    display: grid;
+    width: 2.9rem;
+    height: 2.9rem;
+    border-radius: 0.75rem;
+    background: #eafaf0;
+    color: #10a94f;
+    place-items: center;
+  }
+
+  .contact-shell > a > span:nth-child(2) {
+    display: grid;
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .contact-shell > a small {
+    color: #758092;
+    font-size: 0.58rem;
+    font-weight: 650;
+  }
+
+  .availability {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: rgb(255 255 255 / 0.65);
+    font-size: 0.75rem;
+  }
+
+  .availability span {
+    margin-inline: 0.35rem;
+    color: white;
+  }
+
+  @media (max-width: 48rem) {
+    .contact-shell {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .contact-shell > a {
+      width: 100%;
+    }
+  }
+</style>

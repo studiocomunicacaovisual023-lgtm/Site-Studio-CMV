@@ -1,0 +1,211 @@
+<aside class="page-signal" aria-hidden="true" data-page-signal>
+  <span class="signal-index" data-signal-index>01</span>
+  <span class="signal-track"><i></i><b></b></span>
+  <span class="signal-label" data-signal-label>Presença</span>
+</aside>
+
+<script>
+  const signalSections = [
+    { id: "inicio", index: "01", label: "Presença" },
+    { id: "servicos", index: "02", label: "Soluções" },
+    { id: "projetos", index: "03", label: "Projetos" },
+    { id: "processo", index: "04", label: "Processo" },
+    { id: "sobre", index: "05", label: "Studio" },
+    { id: "clientes", index: "06", label: "Marcas" },
+    { id: "contato", index: "07", label: "Contato" },
+  ];
+  const pageSignals = document.querySelectorAll<HTMLElement>("[data-page-signal]");
+  const idleDelay = 1500;
+
+  pageSignals.forEach((signal) => {
+    if (signal.dataset.pageSignalInitialized === "true") return;
+    signal.dataset.pageSignalInitialized = "true";
+
+    const label = signal.querySelector<HTMLElement>("[data-signal-label]");
+    const index = signal.querySelector<HTMLElement>("[data-signal-index]");
+    const sectionElements = signalSections
+      .map((section) => ({ ...section, element: document.getElementById(section.id) }))
+      .filter((section) => section.element);
+    let frame = 0;
+    let idleTimer = 0;
+
+    const update = () => {
+      frame = 0;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      signal.style.setProperty("--page-progress", progress.toFixed(4));
+      signal.classList.toggle("is-visible", window.scrollY > window.innerHeight * 0.45);
+
+      const anchor = window.innerHeight * 0.42;
+      let current = sectionElements[0];
+      sectionElements.forEach((section) => {
+        if ((section.element?.getBoundingClientRect().top ?? Infinity) <= anchor) current = section;
+      });
+
+      if (current) {
+        if (label) label.textContent = current.label;
+        if (index) index.textContent = current.index;
+      }
+    };
+
+    const handleScroll = () => {
+      signal.classList.remove("is-idle");
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        signal.classList.add("is-idle");
+      }, idleDelay);
+
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    const handleResize = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    signal.classList.add("is-idle");
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener(
+      "pagehide",
+      () => {
+        window.cancelAnimationFrame(frame);
+        window.clearTimeout(idleTimer);
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleResize);
+      },
+      { once: true },
+    );
+  });
+</script>
+
+<style>
+  .page-signal {
+    --page-progress: 0;
+    position: fixed;
+    z-index: 18;
+    top: 31vh;
+    left: max(0.7rem, calc((100vw - var(--container)) / 2 - 2.1rem));
+    display: grid;
+    align-items: center;
+    gap: 0.65rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-0.65rem);
+    transition: opacity 300ms ease, transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .page-signal.is-visible {
+    opacity: 0.72;
+    transform: translateX(0);
+  }
+
+  .signal-track {
+    position: relative;
+    width: 1px;
+    height: min(29vh, 14rem);
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .signal-track::before {
+    position: absolute;
+    inset: 0;
+    background: rgb(114 137 164 / 0.28);
+    content: "";
+  }
+
+  .signal-track i {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(#64baff, #0878f9);
+    box-shadow: 0 0 12px rgb(42 157 255 / 0.7);
+    transform: scaleY(var(--page-progress));
+    transform-origin: top;
+  }
+
+  .signal-track b {
+    position: absolute;
+    top: calc(var(--page-progress) * 100%);
+    left: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 5px rgb(8 120 249 / 0.14), 0 0 20px #2a9dff;
+    transform: translateY(-50%);
+    transition: opacity 220ms ease, transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    animation: page-signal-pulse 2.8s ease-in-out infinite;
+  }
+
+  .signal-index,
+  .signal-label {
+    color: #7690ad;
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: opacity 220ms ease, transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .signal-index {
+    color: #5aafff;
+    text-align: center;
+  }
+
+  .signal-label {
+    writing-mode: vertical-rl;
+  }
+
+  .signal-track::before,
+  .signal-track i {
+    transition: opacity 220ms ease;
+  }
+
+  .page-signal.is-visible.is-idle .signal-index,
+  .page-signal.is-visible.is-idle .signal-label,
+  .page-signal.is-visible.is-idle .signal-track::before,
+  .page-signal.is-visible.is-idle .signal-track i {
+    opacity: 0;
+  }
+
+  .page-signal.is-visible.is-idle .signal-index,
+  .page-signal.is-visible.is-idle .signal-label {
+    transform: translateX(-0.3rem);
+  }
+
+  .page-signal.is-visible.is-idle .signal-track b {
+    opacity: 0.28;
+    transform: translateY(-50%) scale(0.72);
+    animation-play-state: paused;
+  }
+
+  @keyframes page-signal-pulse {
+    50% {
+      box-shadow: 0 0 0 8px rgb(8 120 249 / 0.07), 0 0 28px #64baff;
+    }
+  }
+
+  @media (max-width: 74rem) {
+    .page-signal {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-signal,
+    .signal-index,
+    .signal-label,
+    .signal-track::before,
+    .signal-track i,
+    .signal-track b {
+      transition: none;
+    }
+
+    .signal-track b {
+      animation: none;
+    }
+  }
+</style>

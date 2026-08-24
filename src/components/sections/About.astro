@@ -1,0 +1,341 @@
+---
+import {
+  ArrowUpRight,
+  BadgeCheck,
+  Crosshair,
+  ScanLine,
+  UsersRound,
+} from "@lucide/astro";
+import { Image } from "astro:assets";
+import designImage from "../../assets/company/studio-design.jpg";
+import machineImage from "../../assets/company/studio-impressora.png";
+import { company } from "../../config/company";
+import InstagramIcon from "../ui/InstagramIcon.astro";
+
+const reasons = [
+  {
+    icon: Crosshair,
+    title: "Solução sob medida",
+    text: "O projeto nasce da marca, do espaço e do resultado esperado.",
+  },
+  {
+    icon: UsersRound,
+    title: "Equipe próxima",
+    text: "Atendimento direto para decidir melhor e avançar com segurança.",
+  },
+  {
+    icon: ScanLine,
+    title: "Olhar de acabamento",
+    text: "Leitura, proporção, material e instalação tratados como um conjunto.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Execução responsável",
+    text: "Transparência do orçamento à entrega, sem promessas genéricas.",
+  },
+];
+---
+
+<section class="about section-space" id="sobre" aria-labelledby="about-title">
+  <div class="container about-grid">
+    <div class="about-visual" data-reveal>
+      <figure class="main-image">
+        <Image
+          src={machineImage}
+          alt="Equipamento de impressão da Studio em operação"
+          widths={[640, 960, 1440, 1920]}
+          sizes="(max-width: 768px) 100vw, 48vw"
+          format="webp"
+          loading="lazy"
+          quality={82}
+        />
+      </figure>
+      <figure class="detail-image">
+        <Image
+          src={designImage}
+          alt="Profissional desenvolvendo uma solução de comunicação visual"
+          widths={[480, 720, 1080]}
+          sizes="(max-width: 768px) 45vw, 18vw"
+          format="webp"
+          loading="lazy"
+          quality={80}
+        />
+      </figure>
+      <div class="experience">
+        <strong>+10</strong>
+        <span>anos de atuação<br />em Teresina</span>
+      </div>
+      <span class="reference-label">Acervo Studio</span>
+      <span class="visual-line" aria-hidden="true"></span>
+    </div>
+
+    <div class="about-copy" data-reveal style="--reveal-delay: 90ms">
+      <p class="section-kicker">A Studio</p>
+      <h2 class="section-title" id="about-title">Comunicação visual com presença e resultado.</h2>
+      <p class="lead">
+        Há mais de 10 anos, a Studio desenvolve soluções para empresas, marcas e
+        espaços que precisam comunicar com mais força.
+      </p>
+      <p class="support">
+        Nossa equipe aproxima atendimento, criação, produção e instalação. Da
+        gráfica rápida ao corte a laser, cada escolha é conduzida para chegar bem
+        resolvida ao ponto de contato com seu cliente.
+      </p>
+
+      <a
+        class="instagram-link"
+        href={company.instagramUrl}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <InstagramIcon size={19} strokeWidth={1.7} />
+        <span>Acompanhe os trabalhos e bastidores</span>
+        <ArrowUpRight aria-hidden="true" size={17} stroke-width={1.7} />
+      </a>
+
+      <div class="reason-grid">
+        {reasons.map(({ icon: Icon, title, text }, index) => (
+          <article data-reveal style={`--reveal-delay: ${index * 55}ms`}>
+            <Icon aria-hidden="true" size={22} stroke-width={1.5} />
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 8% 70%, rgb(8 120 249 / 0.11), transparent 25rem),
+      #070c14;
+  }
+
+  .about-grid {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: clamp(3rem, 8vw, 8rem);
+  }
+
+  .about-visual {
+    position: relative;
+    min-height: 31rem;
+  }
+
+  figure {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: #0d1623;
+  }
+
+  .main-image {
+    position: absolute;
+    inset: 0 11% 12% 0;
+    display: grid;
+    border-radius: 1.2rem;
+    background:
+      linear-gradient(145deg, rgb(8 120 249 / 0.12), transparent),
+      #e8edf2;
+    place-items: center;
+  }
+
+  .main-image :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.02) saturate(0.9);
+  }
+
+  .detail-image {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 43%;
+    height: 46%;
+    border: 0.55rem solid #070c14;
+    border-radius: 1rem;
+    box-shadow: 0 22px 50px rgb(0 0 0 / 0.38);
+  }
+
+  .detail-image :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .experience {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 0.8rem;
+    background: rgb(3 7 13 / 0.74);
+    backdrop-filter: blur(12px);
+  }
+
+  .experience strong {
+    color: #64baff;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    letter-spacing: -0.06em;
+  }
+
+  .experience span {
+    color: #bdc7d4;
+    font-size: 0.59rem;
+    font-weight: 700;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .reference-label {
+    position: absolute;
+    right: 1.2rem;
+    bottom: 1rem;
+    z-index: 3;
+    padding: 0.38rem 0.58rem;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: 999px;
+    background: rgb(3 7 13 / 0.68);
+    color: #c3cfdd;
+    font-size: 0.53rem;
+    font-weight: 780;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+  }
+
+  .visual-line {
+    position: absolute;
+    top: 8%;
+    right: 6%;
+    width: 1px;
+    height: 42%;
+    background: linear-gradient(transparent, var(--blue-bright), transparent);
+    box-shadow: 0 0 16px var(--blue-bright);
+  }
+
+  .section-title {
+    max-width: 12ch;
+  }
+
+  .lead {
+    max-width: 34rem;
+    margin: 1.6rem 0 0;
+    color: #d5dce5;
+    font-size: 1.02rem;
+  }
+
+  .support {
+    max-width: 36rem;
+    margin: 1rem 0 0;
+    color: #8290a4;
+    font-size: 0.83rem;
+  }
+
+  .instagram-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 1.35rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgb(85 173 255 / 0.28);
+    border-radius: 0.75rem;
+    background: rgb(8 120 249 / 0.07);
+    color: #b9dbff;
+    font-size: 0.78rem;
+    font-weight: 760;
+    transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .instagram-link:hover,
+  .instagram-link:focus-visible {
+    border-color: rgb(85 173 255 / 0.55);
+    background: rgb(8 120 249 / 0.13);
+    color: white;
+    transform: translateY(-0.12rem);
+  }
+
+  .instagram-link :global(svg:last-child) {
+    opacity: 0.72;
+  }
+
+  .reason-grid {
+    display: grid;
+    margin-top: 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .reason-grid article {
+    padding: 1.15rem;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 0.85rem;
+    background: rgb(255 255 255 / 0.022);
+  }
+
+  .reason-grid :global(svg) {
+    color: #55adff;
+  }
+
+  .reason-grid h3 {
+    margin: 0.8rem 0 0;
+    font-family: var(--font-display);
+    font-size: 0.79rem;
+    font-weight: 680;
+  }
+
+  .reason-grid p {
+    margin: 0.38rem 0 0;
+    color: #8a99ad;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 56rem) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-visual {
+      min-height: min(32rem, 105vw);
+      order: 2;
+    }
+  }
+
+  @media (max-width: 35rem) {
+    .reason-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+
+    .reason-grid article {
+      padding: 1rem;
+    }
+
+    .reason-grid h3 {
+      font-size: 0.82rem;
+    }
+
+    .reason-grid p {
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 22rem) {
+    .reason-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
