@@ -25,9 +25,9 @@ const steps = [
 ];
 ---
 
-<section class="process section-space" id="processo" aria-labelledby="process-title">
+<section class="process section-space" id="processo" aria-labelledby="process-title" data-gsap-process>
   <div class="container process-shell">
-    <header data-reveal>
+    <header data-gsap-process-copy>
       <p class="section-kicker">Como funciona</p>
       <h2 class="section-title" id="process-title">Da ideia à instalação.</h2>
       <p class="section-intro">
@@ -36,11 +36,11 @@ const steps = [
       </p>
     </header>
 
-    <ol class="steps">
+    <ol class="steps" data-gsap-process-track>
       {steps.map(({ icon: Icon, title, text }, index) => (
-        <li data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+        <li data-gsap-process-step>
           <span class="step-number">0{index + 1}</span>
-          <span class="step-icon"><Icon aria-hidden="true" size={25} stroke-width={1.5} /></span>
+          <span class="step-icon" data-gsap-process-icon><Icon aria-hidden="true" size={25} stroke-width={1.5} /></span>
           <h3>{title}</h3>
           <p>{text}</p>
         </li>
@@ -84,6 +84,7 @@ const steps = [
   }
 
   .steps {
+    --process-line-progress: 1;
     position: relative;
     display: grid;
     margin: 0;
@@ -100,6 +101,9 @@ const steps = [
     height: 1px;
     background: #dce3eb;
     content: "";
+    transform: scaleX(var(--process-line-progress));
+    transform-origin: left center;
+    will-change: transform;
   }
 
   .steps li {

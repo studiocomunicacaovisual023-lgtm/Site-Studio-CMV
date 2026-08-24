@@ -7,7 +7,7 @@
 - Imagens provisórias podem permanecer, mas nunca devem ser apresentadas como trabalhos reais da Studio.
 - O principal caminho de conversão continua sendo o WhatsApp, com mensagens contextualizadas.
 - A navegação fixa, o indicador lateral e o CTA final devem comunicar o mesmo estado da página.
-- A implementação deve permanecer nativa em Astro, CSS e JavaScript leve, sem novas dependências.
+- A implementação permanece nativa em Astro, com GSAP restrito à coreografia da Hero e do Processo na Home.
 - A entrega deve preservar responsividade, movimento reduzido, navegação por teclado e build estático.
 
 ## Premissas
@@ -36,13 +36,15 @@
 15. **Indicador lateral em repouso:** manter número, trilha, progresso e rótulo visíveis enquanto há scroll e recolhê-los após 1,5 segundo sem movimento. No estado inativo, preservar somente o ponto de progresso com baixa opacidade para manter a assinatura visual sem competir com o conteúdo. A retomada deve ser imediata, a transição deve usar apenas opacidade e transformação, o temporizador deve ser limpo no descarte da página e `prefers-reduced-motion` deve continuar removendo as transições.
 16. **Imagem do destaque Fachadas:** substituir a referência arquitetônica genérica pela imagem da fachada roxa enviada pelo responsável do projeto. Preservar o selo “Imagem de referência”, armazenar uma cópia local otimizada sem ampliar artificialmente os 1448×1086 px originais e usar `object-fit: cover` com foco vertical em 20%, no terço superior, para preservar integralmente o símbolo, o letreiro e o revestimento. A troca se limita ao primeiro card de serviços e não altera a Hero nem o projeto “Fachada comercial”.
 17. **Imagem do projeto Fachada comercial:** substituir a referência noturna do Pexels pela fachada amarela e roxa Cannil Pet enviada pelo responsável. Preservar os 1448×1086 px originais em uma cópia JPEG otimizada, manter o projeto como provisório até confirmação de procedência e usar foco vertical em 20% para priorizar o letreiro. O ponto focal passa a ser um campo opcional da coleção de projetos, permitindo ajustar futuras imagens individualmente sem criar seletores CSS por ordem do card.
+18. **Coreografia GSAP da Home:** aplicar GSAP e ScrollTrigger somente à Hero e ao Processo. Na Hero, coordenar entrada do texto, fachada e diferenciais, adicionando parallax sutil apenas ao card e à luz de fundo, sem animar texto durante o scroll. No Processo, desenhar a linha e revelar as etapas em sequência ao entrar na viewport. Não usar pin, smooth-scroll ou bloqueio de interação; manter conteúdo visível sem JavaScript, reduzir a intensidade em telas menores, respeitar `prefers-reduced-motion` e limpar todas as instâncias no descarte da página.
 
 ## Fora de escopo
 
 - Criar cases ou páginas internas sem conteúdo real.
 - Criar depoimentos, avaliações, horários, redes sociais ou faixas de preço não confirmados.
 - Substituir o acervo provisório sem novos arquivos aprovados pela Studio.
-- Adicionar Motion, GSAP, React ou qualquer dependência de animação.
+- Expandir o GSAP para serviços, projetos, institucional ou outras seções sem uma nova validação de impacto.
+- Adicionar React, smooth-scroll, scroll hijacking ou animações com seção fixada.
 
 ## Validação
 

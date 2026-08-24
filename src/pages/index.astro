@@ -9,6 +9,7 @@ import Hero from "../components/sections/Hero.astro";
 import Process from "../components/sections/Process.astro";
 import Projects from "../components/sections/Projects.astro";
 import Services from "../components/sections/Services.astro";
+import HomeMotion from "../components/ui/HomeMotion.astro";
 import MobileQuoteCta from "../components/ui/MobileQuoteCta.astro";
 import PageSignal from "../components/ui/PageSignal.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -24,7 +25,7 @@ const projects = (await getCollection("projects", ({ data }) => data.featured)).
 <BaseLayout>
   <Header />
   <PageSignal />
-  <main id="conteudo">
+  <main id="conteudo" data-gsap-home>
     <Hero />
     <Services services={services} />
     <Projects projects={projects} />
@@ -33,6 +34,7 @@ const projects = (await getCollection("projects", ({ data }) => data.featured)).
     <Clients />
     <ContactCta />
   </main>
+  <HomeMotion />
   <MobileQuoteCta />
   <Footer />
 </BaseLayout>

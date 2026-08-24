@@ -1,0 +1,7 @@
+<script>
+  import { initHomeMotion } from "../../features/motion/home-motion";
+
+  const cleanupHomeMotion = initHomeMotion();
+
+  window.addEventListener("pagehide", cleanupHomeMotion, { once: true });
+</script>
