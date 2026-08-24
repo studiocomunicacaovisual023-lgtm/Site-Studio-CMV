@@ -248,7 +248,9 @@ describe("homepage comercial", () => {
 
     expect(servicesSource).toContain("margin-top: 1.375rem");
     expect(servicesSource).toContain("margin-top: 2rem");
-    expect(servicesSource).toContain(".featured-card:nth-child(2) {\n      margin-top: 0;");
+    expect(servicesSource.replace(/\r\n/g, "\n")).toContain(
+      ".featured-card:nth-child(2) {\n      margin-top: 0;",
+    );
   });
 
   it("prioriza o letreiro da fachada enviada no recorte do primeiro destaque", () => {
