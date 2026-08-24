@@ -1,0 +1,866 @@
+---
+import {
+  ArrowRight,
+  BadgeCheck,
+  MessagesSquare,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+} from "@lucide/astro";
+import { Image } from "astro:assets";
+import heroFacade from "../../assets/company/studio-facade-hero-v3.png";
+import { whatsappUrl } from "../../config/company";
+
+const proofPoints = [
+  {
+    icon: MessagesSquare,
+    title: "Atendimento próximo",
+    text: "Seu projeto começa com escuta e contexto.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Produção cuidadosa",
+    text: "Materiais escolhidos para cada aplicação.",
+  },
+  {
+    icon: Wrench,
+    title: "Instalação profissional",
+    text: "Execução precisa do início ao acabamento.",
+  },
+  {
+    icon: Sparkles,
+    title: "Presença que marca",
+    text: "Soluções pensadas para sua marca ser vista.",
+  },
+];
+---
+
+<section
+  class="hero"
+  id="inicio"
+  aria-labelledby="hero-title"
+  data-motion-root
+  data-hero-lighting
+>
+  <div class="hero-light" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span></span> Comunicação visual em Teresina</p>
+      <h1 id="hero-title">
+        <span class="title-line" data-title-line>Sua marca</span>
+        <span class="title-line" data-title-line>merece ser</span>
+        <strong class="title-line" data-title-line>vista.</strong>
+      </h1>
+      <p class="hero-description">
+        Fachadas, letreiros e projetos que transformam negócios em pontos de
+        referência.
+      </p>
+      <div class="hero-actions">
+        <a
+          class="button button-primary"
+          href={whatsappUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Solicitar orçamento
+          <ArrowRight aria-hidden="true" size={18} stroke-width={1.8} />
+        </a>
+        <a class="button button-secondary" href="#projetos">
+          Conhecer projetos
+          <ArrowRight aria-hidden="true" size={18} stroke-width={1.8} />
+        </a>
+      </div>
+      <div class="hero-trust">
+        <ShieldCheck aria-hidden="true" size={18} />
+        <span>Mais de 10 anos criando presença para marcas e espaços.</span>
+      </div>
+    </div>
+
+    <figure class="hero-visual">
+      <div class="image-shell">
+        <div class="facade-scene" data-hero-depth-layer>
+          <Image
+            class="facade-layer facade-layer-base"
+            src={heroFacade}
+            alt="Fachada da Studio Comunicação Visual ambientada em uma cena noturna azul"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
+            format="webp"
+            quality={82}
+            loading="eager"
+            fetchpriority="high"
+          />
+          <Image
+            class="facade-layer facade-layer-lit"
+            data-hero-light-layer
+            src={heroFacade}
+            alt=""
+            aria-hidden="true"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
+            format="webp"
+            quality={82}
+            loading="eager"
+          />
+        </div>
+        <div class="image-wash" aria-hidden="true"></div>
+        <div class="facade-sign-glow" aria-hidden="true"></div>
+        <div class="lighting-sweep" aria-hidden="true"></div>
+        <div class="signal-line" aria-hidden="true"><span></span></div>
+        <div class="visual-index" aria-hidden="true">
+          <span>01</span>
+          <i></i>
+          <small>Presença</small>
+        </div>
+        <figcaption>Fachada real da Studio <span>•</span> ambientação digital</figcaption>
+      </div>
+    </figure>
+  </div>
+
+  <div class="container proof-strip" aria-label="Diferenciais da Studio">
+    {proofPoints.map(({ icon: Icon, title, text }, index) => (
+      <article class="proof-item" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+        <span class="proof-number">0{index + 1}</span>
+        <Icon aria-hidden="true" size={25} stroke-width={1.55} />
+        <div>
+          <h2>{title}</h2>
+          <p>{text}</p>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<script>
+  const heroLightingElements = document.querySelectorAll<HTMLElement>(
+    "[data-hero-lighting]",
+  );
+
+  heroLightingElements.forEach((hero) => {
+    if (hero.dataset.heroLightingState === "ready") return;
+
+    hero.dataset.heroLightingState = "ready";
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const finePointer = window.matchMedia("(pointer: fine)");
+    let isVisible = false;
+    let hasStarted = false;
+    let firstFrame = 0;
+    let secondFrame = 0;
+    let depthFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+    let heroBounds = hero.getBoundingClientRect();
+
+    const resetDepth = () => {
+      window.cancelAnimationFrame(depthFrame);
+      depthFrame = 0;
+      hero.style.setProperty("--hero-depth-x", "0px");
+      hero.style.setProperty("--hero-depth-y", "0px");
+    };
+
+    const refreshHeroBounds = () => {
+      heroBounds = hero.getBoundingClientRect();
+    };
+
+    const updateMotionState = () => {
+      const shouldPause = reducedMotion.matches || document.hidden || !isVisible;
+      hero.classList.toggle("is-motion-paused", shouldPause);
+    };
+
+    const revealFacade = () => {
+      if (hasStarted) return;
+      hasStarted = true;
+
+      if (reducedMotion.matches) {
+        hero.classList.add("is-lit");
+        updateMotionState();
+        return;
+      }
+
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => {
+          hero.classList.add("is-lit");
+        });
+      });
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!finePointer.matches || reducedMotion.matches || !isVisible) return;
+
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (depthFrame) return;
+
+      depthFrame = window.requestAnimationFrame(() => {
+        depthFrame = 0;
+        const normalizedX = (pointerX - heroBounds.left) / heroBounds.width - 0.5;
+        const normalizedY = (pointerY - heroBounds.top) / heroBounds.height - 0.5;
+        const x = Math.max(-6, Math.min(6, normalizedX * -12));
+        const y = Math.max(-4, Math.min(4, normalizedY * -8));
+
+        hero.style.setProperty("--hero-depth-x", `${x.toFixed(2)}px`);
+        hero.style.setProperty("--hero-depth-y", `${y.toFixed(2)}px`);
+      });
+    };
+
+    const handleMotionPreference = () => {
+      if (reducedMotion.matches) {
+        hero.classList.add("is-lit");
+        resetDepth();
+      }
+      updateMotionState();
+    };
+
+    hero.classList.add("lighting-ready");
+    resetDepth();
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry?.isIntersecting ?? false;
+        if (isVisible) revealFacade();
+        updateMotionState();
+      },
+      { threshold: 0.08 },
+    );
+
+    observer.observe(hero);
+    hero.addEventListener("pointerenter", refreshHeroBounds, { passive: true });
+    hero.addEventListener("pointermove", handlePointerMove, { passive: true });
+    hero.addEventListener("pointerleave", resetDepth);
+    window.addEventListener("resize", refreshHeroBounds, { passive: true });
+    document.addEventListener("visibilitychange", updateMotionState);
+    reducedMotion.addEventListener("change", handleMotionPreference);
+
+    if (reducedMotion.matches) revealFacade();
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        observer.disconnect();
+        window.cancelAnimationFrame(firstFrame);
+        window.cancelAnimationFrame(secondFrame);
+        window.cancelAnimationFrame(depthFrame);
+        hero.removeEventListener("pointerenter", refreshHeroBounds);
+        hero.removeEventListener("pointermove", handlePointerMove);
+        hero.removeEventListener("pointerleave", resetDepth);
+        window.removeEventListener("resize", refreshHeroBounds);
+        document.removeEventListener("visibilitychange", updateMotionState);
+        reducedMotion.removeEventListener("change", handleMotionPreference);
+      },
+      { once: true },
+    );
+  });
+</script>
+
+<style>
+  .hero {
+    --hero-depth-x: 0px;
+    --hero-depth-y: 0px;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 7.25rem 0 1.75rem;
+    background:
+      radial-gradient(circle at 9% 43%, rgb(8 120 249 / 0.1), transparent 25rem),
+      linear-gradient(110deg, #03070d 0%, #050a12 55%, #02050a 100%);
+  }
+
+  .hero::after {
+    position: absolute;
+    z-index: -2;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(transparent, rgb(255 255 255 / 0.12), transparent);
+    content: "";
+  }
+
+  .hero-light {
+    position: absolute;
+    z-index: -1;
+    top: -40%;
+    left: 52%;
+    width: 30rem;
+    height: 70rem;
+    background: linear-gradient(180deg, transparent, rgb(8 120 249 / 0.5), transparent);
+    filter: blur(12px);
+    opacity: 0.34;
+    transform: rotate(31deg);
+    transform-origin: center;
+  }
+
+  .hero-grid {
+    display: grid;
+    min-height: 32rem;
+    align-items: center;
+    grid-template-columns: minmax(28rem, 0.86fr) minmax(30rem, 1.14fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 2;
+    padding-block: 1rem 2rem;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0 0 1.4rem;
+    color: #90a0b7;
+    font-size: 0.68rem;
+    font-weight: 780;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow span {
+    width: 2.8rem;
+    height: 1px;
+    background: var(--blue-bright);
+    box-shadow: 0 0 14px var(--blue-bright);
+  }
+
+  h1 {
+    max-width: none;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3.45rem, 4.65vw, 5.15rem);
+    font-weight: 670;
+    letter-spacing: -0.075em;
+    line-height: 0.94;
+  }
+
+  .title-line {
+    display: block;
+    white-space: nowrap;
+  }
+
+  h1 strong {
+    display: block;
+    margin-top: 0.08em;
+    background: linear-gradient(120deg, #64baff, #0878f9 55%, #0054da);
+    background-clip: text;
+    color: transparent;
+    font-weight: 680;
+    text-shadow: 0 0 42px rgb(8 120 249 / 0.2);
+  }
+
+  .hero-description {
+    max-width: 31rem;
+    margin: 1.7rem 0 0;
+    color: #adb7c6;
+    font-size: clamp(1rem, 1.4vw, 1.16rem);
+    line-height: 1.65;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+
+  .hero-trust {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.45rem;
+    color: #748399;
+    font-size: 0.75rem;
+  }
+
+  .hero-trust :global(svg) {
+    color: var(--blue-bright);
+  }
+
+  .hero-visual {
+    position: relative;
+    min-width: 0;
+    margin: 0 -2.5rem 0 0;
+  }
+
+  .image-shell {
+    position: relative;
+    isolation: isolate;
+    height: clamp(30rem, 43vw, 39rem);
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: #07101c;
+    clip-path: polygon(13% 0, 100% 0, 100% 92%, 88% 100%, 0 100%, 0 15%);
+    box-shadow: -40px 40px 100px rgb(0 0 0 / 0.48);
+  }
+
+  .facade-scene {
+    position: absolute;
+    z-index: 0;
+    inset: -1.5%;
+    transform: translate3d(var(--hero-depth-x), var(--hero-depth-y), 0) scale(1.035);
+    transition: transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: transform;
+  }
+
+  .facade-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 45%;
+  }
+
+  .facade-layer-base {
+    filter: saturate(0.76) contrast(1.05) brightness(0.66);
+  }
+
+  .facade-layer-lit {
+    clip-path: inset(0);
+    filter: saturate(0.96) contrast(1.02) brightness(1.02);
+  }
+
+  .hero.lighting-ready:not(.is-lit) .facade-layer-lit {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .hero.lighting-ready.is-lit .facade-layer-lit {
+    clip-path: inset(0);
+    transition: clip-path 1.65s cubic-bezier(0.2, 0.72, 0.22, 1);
+  }
+
+  .image-wash {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(3 7 13 / 0.24) 0%, transparent 32%),
+      linear-gradient(0deg, rgb(3 7 13 / 0.36), transparent 38%),
+      linear-gradient(135deg, rgb(8 120 249 / 0.08), transparent 48%);
+    pointer-events: none;
+  }
+
+  .facade-sign-glow {
+    position: absolute;
+    z-index: 3;
+    top: 8%;
+    left: 32%;
+    width: 46%;
+    height: 31%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgb(92 179 255 / 0.38), rgb(8 120 249 / 0.11) 44%, transparent 72%);
+    filter: blur(20px);
+    mix-blend-mode: screen;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateZ(0);
+    transition: opacity 900ms ease 850ms;
+  }
+
+  .hero.is-lit .facade-sign-glow {
+    opacity: 0.5;
+    animation: facade-glow-breathe 5.8s ease-in-out 1.8s infinite;
+  }
+
+  .lighting-sweep {
+    position: absolute;
+    z-index: 4;
+    top: -22%;
+    bottom: -22%;
+    left: -42%;
+    width: 26%;
+    background: linear-gradient(90deg, transparent, rgb(77 170 255 / 0.2), transparent);
+    filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transform: skewX(-16deg);
+  }
+
+  .hero.is-lit .lighting-sweep {
+    animation: facade-light-sweep 9.5s cubic-bezier(0.2, 0.7, 0.2, 1) 2.4s infinite;
+  }
+
+  .signal-line {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    bottom: 0;
+    left: 13%;
+    width: 1px;
+    background: linear-gradient(transparent, var(--blue-bright), transparent);
+    box-shadow: 0 0 18px var(--blue-bright);
+  }
+
+  .signal-line span {
+    position: absolute;
+    top: 29%;
+    left: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 5px rgb(8 120 249 / 0.24), 0 0 26px #2a9dff;
+  }
+
+  .hero.is-lit .signal-line span {
+    animation: signal-pulse 3.8s ease-in-out 1.4s infinite;
+  }
+
+  figcaption {
+    position: absolute;
+    z-index: 6;
+    right: 2rem;
+    bottom: 1.4rem;
+    color: rgb(255 255 255 / 0.54);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  figcaption span {
+    margin-inline: 0.4rem;
+    color: var(--blue-bright);
+  }
+
+  .visual-index {
+    position: absolute;
+    z-index: 6;
+    bottom: 1.35rem;
+    left: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    text-shadow: 0 2px 12px rgb(0 0 0 / 0.72);
+  }
+
+  .visual-index span {
+    color: white;
+    font-size: 0.72rem;
+  }
+
+  .visual-index i {
+    width: 3.7rem;
+    height: 1px;
+    background: var(--blue-bright);
+    box-shadow: 0 0 14px var(--blue-bright);
+  }
+
+  .visual-index small {
+    color: #aab6c7;
+    font-size: 0.57rem;
+    font-weight: 680;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .proof-strip {
+    position: relative;
+    z-index: 5;
+    display: grid;
+    margin-top: -0.65rem;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.11);
+    border-radius: 1rem;
+    background: rgb(8 14 23 / 0.91);
+    box-shadow: 0 24px 70px rgb(0 0 0 / 0.32);
+    backdrop-filter: blur(18px);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .proof-item {
+    position: relative;
+    display: grid;
+    min-height: 7.2rem;
+    align-items: center;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    padding: 1.25rem;
+    border-right: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .proof-item:last-child {
+    border-right: 0;
+  }
+
+  .proof-item :global(svg) {
+    color: var(--blue-bright);
+    filter: drop-shadow(0 0 12px rgb(42 157 255 / 0.3));
+  }
+
+  .proof-number {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.7rem;
+    color: rgb(255 255 255 / 0.13);
+    font-family: var(--font-display);
+    font-size: 0.58rem;
+  }
+
+  .proof-item h2 {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 760;
+    letter-spacing: -0.02em;
+  }
+
+  .proof-item p {
+    margin: 0.25rem 0 0;
+    color: #748399;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  :global(html.motion-ready) .hero:not(.is-visible) .eyebrow,
+  :global(html.motion-ready) .hero:not(.is-visible) .hero-description,
+  :global(html.motion-ready) .hero:not(.is-visible) .hero-actions,
+  :global(html.motion-ready) .hero:not(.is-visible) .hero-trust,
+  :global(html.motion-ready) .hero:not(.is-visible) .title-line {
+    opacity: 0;
+    transform: translateY(1.1rem);
+  }
+
+  :global(html.motion-ready) .hero.is-visible .eyebrow,
+  :global(html.motion-ready) .hero.is-visible .hero-description,
+  :global(html.motion-ready) .hero.is-visible .hero-actions,
+  :global(html.motion-ready) .hero.is-visible .hero-trust,
+  :global(html.motion-ready) .hero.is-visible .title-line {
+    opacity: 1;
+    transform: none;
+    transition: opacity 620ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 720ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  :global(html.motion-ready) .hero.is-visible .title-line:nth-child(2) { transition-delay: 80ms; }
+  :global(html.motion-ready) .hero.is-visible .title-line:nth-child(3) { transition-delay: 160ms; }
+  :global(html.motion-ready) .hero.is-visible .hero-description { transition-delay: 220ms; }
+  :global(html.motion-ready) .hero.is-visible .hero-actions { transition-delay: 280ms; }
+  :global(html.motion-ready) .hero.is-visible .hero-trust { transition-delay: 340ms; }
+
+  :global(html.motion-ready) .hero:not(.is-visible) .hero-visual {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(0.985);
+  }
+
+  :global(html.motion-ready) .hero.is-visible .hero-visual {
+    opacity: 1;
+    transform: none;
+    transition: opacity 800ms ease 120ms, transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms;
+  }
+
+  @keyframes facade-glow-breathe {
+    0%, 100% {
+      opacity: 0.38;
+      transform: scale(0.98);
+    }
+
+    50% {
+      opacity: 0.57;
+      transform: scale(1.045);
+    }
+  }
+
+  @keyframes facade-light-sweep {
+    0%, 68% {
+      left: -42%;
+      opacity: 0;
+    }
+
+    73% {
+      opacity: 0.42;
+    }
+
+    88% {
+      opacity: 0.14;
+    }
+
+    94%, 100% {
+      left: 128%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes signal-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 5px rgb(8 120 249 / 0.18), 0 0 20px #2a9dff;
+    }
+
+    50% {
+      box-shadow: 0 0 0 8px rgb(8 120 249 / 0.08), 0 0 32px #58b5ff;
+    }
+  }
+
+  .hero.is-motion-paused .facade-sign-glow,
+  .hero.is-motion-paused .lighting-sweep,
+  .hero.is-motion-paused .signal-line span {
+    animation-play-state: paused;
+  }
+
+  @media (max-width: 64rem) {
+    .hero {
+      padding-top: 7.5rem;
+    }
+
+    .hero-grid {
+      grid-template-columns: minmax(22rem, 0.88fr) minmax(24rem, 1.12fr);
+      gap: 2rem;
+    }
+
+    .hero-visual {
+      margin-right: -5rem;
+    }
+
+    .proof-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .proof-item:nth-child(2) {
+      border-right: 0;
+    }
+
+    .proof-item:nth-child(-n + 2) {
+      border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    }
+  }
+
+  @media (max-width: 48rem) {
+    .hero {
+      min-height: auto;
+      padding-top: 5.75rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .hero::after {
+      display: none;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .hero-copy {
+      padding: 1.75rem 0 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 13.3vw, 4.2rem);
+    }
+
+    .hero-description {
+      max-width: 27rem;
+    }
+
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .hero-visual {
+      margin: 0 calc(var(--gutter) * -1);
+    }
+
+    .image-shell {
+      height: min(27rem, 110vw);
+      border-right: 0;
+      border-left: 0;
+      clip-path: polygon(10% 0, 100% 0, 100% 92%, 88% 100%, 0 100%, 0 10%);
+    }
+
+    .hero.is-lit .facade-scene {
+      animation: facade-mobile-depth 12s ease-in-out 2s infinite alternate;
+    }
+
+    .hero.is-motion-paused .facade-scene {
+      animation-play-state: paused;
+    }
+
+    .visual-index {
+      left: var(--gutter);
+    }
+
+    figcaption {
+      right: var(--gutter);
+      max-width: 13rem;
+      text-align: right;
+    }
+
+    .proof-strip {
+      margin-top: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .proof-item {
+      min-height: 7.5rem;
+      align-content: start;
+      grid-template-columns: 1fr;
+      gap: 0.55rem;
+      padding: 1rem;
+      border-right: 1px solid rgb(255 255 255 / 0.08);
+      border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    }
+
+    .proof-item:nth-child(2n) {
+      border-right: 0;
+    }
+
+    .proof-item:nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+
+    .proof-item :global(svg) {
+      width: 1.3rem;
+      height: 1.3rem;
+    }
+
+    .proof-item h2 {
+      font-size: 0.8rem;
+    }
+
+    .proof-item p {
+      font-size: 0.78rem;
+    }
+  }
+
+  @keyframes facade-mobile-depth {
+    from {
+      transform: translate3d(-2px, -1px, 0) scale(1.035);
+    }
+
+    to {
+      transform: translate3d(2px, 2px, 0) scale(1.045);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow,
+    .hero-description,
+    .hero-actions,
+    .hero-trust,
+    .title-line,
+    .hero-visual,
+    .facade-scene,
+    .facade-layer,
+    .facade-sign-glow,
+    .lighting-sweep,
+    .signal-line span {
+      opacity: 1 !important;
+      transform: none !important;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .facade-layer-lit {
+      clip-path: inset(0) !important;
+    }
+
+    .facade-sign-glow {
+      opacity: 0.32 !important;
+    }
+
+    .lighting-sweep {
+      display: none;
+    }
+  }
+</style>

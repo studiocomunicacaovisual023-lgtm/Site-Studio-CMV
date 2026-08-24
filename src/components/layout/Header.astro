@@ -1,0 +1,407 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import { Image } from "astro:assets";
+import studioSymbol from "../../assets/company/studio-symbol.png";
+import { whatsappUrl } from "../../config/company";
+
+const links = [
+  { label: "Início", href: "#inicio" },
+  { label: "Serviços", href: "#servicos" },
+  { label: "Projetos", href: "#projetos" },
+  { label: "Processo", href: "#processo" },
+  { label: "A Studio", href: "#sobre" },
+  { label: "Contato", href: "#contato" },
+];
+---
+
+<header class="site-header" data-site-header data-header-state="top">
+  <div class="container header-inner">
+    <a class="brand" href="#inicio" aria-label="Studio Comunicação Visual — início">
+      <Image src={studioSymbol} alt="" width={48} height={48} loading="eager" />
+      <span class="brand-copy">
+        <strong>Studio</strong>
+        <small>Comunicação visual</small>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Navegação principal">
+      {links.map((link) => (
+        <a href={link.href} data-section-link={link.href.slice(1)}>{link.label}</a>
+      ))}
+    </nav>
+
+    <a
+      class="button button-primary header-cta"
+      href={whatsappUrl}
+      target="_blank"
+      rel="noreferrer"
+    >
+      Solicitar orçamento
+      <ArrowUpRight aria-hidden="true" size={17} stroke-width={1.8} />
+    </a>
+
+    <details class="mobile-nav" data-mobile-nav>
+      <summary aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>
+        <span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
+      </summary>
+      <nav aria-label="Navegação móvel">
+        {links.map((link) => (
+          <a
+            href={link.href}
+            data-section-link={link.href.slice(1)}
+            data-mobile-nav-link
+          >
+            {link.label}
+          </a>
+        ))}
+        <a href={whatsappUrl} target="_blank" rel="noreferrer">Solicitar orçamento</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  const siteHeaders = document.querySelectorAll<HTMLElement>(
+    "[data-site-header]",
+  );
+
+  siteHeaders.forEach((header) => {
+    if (header.dataset.headerInitialized === "true") return;
+
+    header.dataset.headerInitialized = "true";
+    const sectionLinks = Array.from(
+      header.querySelectorAll<HTMLAnchorElement>("[data-section-link]"),
+    );
+    const sections = sectionLinks
+      .map((link) => document.getElementById(link.dataset.sectionLink ?? ""))
+      .filter((section): section is HTMLElement => Boolean(section));
+    const mobileNav = header.querySelector<HTMLDetailsElement>("[data-mobile-nav]");
+    const menuToggle = header.querySelector<HTMLElement>("[data-menu-toggle]");
+    const mobileNavLinks = Array.from(
+      header.querySelectorAll<HTMLAnchorElement>("[data-mobile-nav-link]"),
+    );
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let animationFrame = 0;
+
+    const syncMobileMenuState = () => {
+      const isOpen = mobileNav?.open ?? false;
+      menuToggle?.setAttribute("aria-expanded", String(isOpen));
+      menuToggle?.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+    };
+
+    const updateActiveSection = () => {
+      const anchorLine = window.innerHeight * 0.42;
+      let activeId = sections[0]?.id ?? "inicio";
+
+      sections.forEach((section) => {
+        if (section.getBoundingClientRect().top <= anchorLine) activeId = section.id;
+      });
+
+      sectionLinks.forEach((link) => {
+        const isActive = link.dataset.sectionLink === activeId;
+        link.classList.toggle("is-active", isActive);
+        if (isActive) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    };
+
+    const updateHeaderState = () => {
+      animationFrame = 0;
+      const isScrolled = window.scrollY > 24;
+
+      header.classList.toggle("is-scrolled", isScrolled);
+      header.dataset.headerState = isScrolled ? "scrolled" : "top";
+      updateActiveSection();
+    };
+
+    const navigateFromMobileMenu = (event: Event) => {
+      const link = event.currentTarget as HTMLAnchorElement;
+      const targetId = link.dataset.sectionLink;
+      const target = targetId ? document.getElementById(targetId) : null;
+      if (!target || !targetId) return;
+
+      event.preventDefault();
+      mobileNav?.removeAttribute("open");
+      syncMobileMenuState();
+      window.history.pushState(null, "", `#${targetId}`);
+      target.scrollIntoView({
+        behavior: reducedMotion.matches ? "auto" : "smooth",
+        block: "start",
+      });
+    };
+
+    const handleScroll = () => {
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(updateHeaderState);
+    };
+
+    updateHeaderState();
+    syncMobileMenuState();
+    mobileNav?.addEventListener("toggle", syncMobileMenuState);
+    mobileNavLinks.forEach((link) =>
+      link.addEventListener("click", navigateFromMobileMenu),
+    );
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        window.cancelAnimationFrame(animationFrame);
+        window.removeEventListener("scroll", handleScroll);
+        mobileNav?.removeEventListener("toggle", syncMobileMenuState);
+        mobileNavLinks.forEach((link) =>
+          link.removeEventListener("click", navigateFromMobileMenu),
+        );
+      },
+      { once: true },
+    );
+  });
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    z-index: 50;
+    top: 0;
+    right: 0;
+    left: 0;
+    border-bottom: 1px solid transparent;
+    background: linear-gradient(to bottom, rgb(3 7 13 / 0.96), rgb(3 7 13 / 0.72));
+    backdrop-filter: blur(18px);
+    transition:
+      border-color 240ms ease,
+      background 240ms ease,
+      box-shadow 240ms ease;
+  }
+
+  .site-header.is-scrolled {
+    border-bottom-color: rgb(42 157 255 / 0.22);
+    background: rgb(3 7 13 / 0.9);
+    box-shadow: 0 18px 48px rgb(0 0 0 / 0.3);
+  }
+
+  .header-inner {
+    display: flex;
+    min-height: 5.25rem;
+    align-items: center;
+    gap: 1.5rem;
+    transition: min-height 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .site-header.is-scrolled .header-inner {
+    min-height: 4.25rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  .brand :global(img) {
+    width: 2.8rem;
+    height: 2.8rem;
+    filter: drop-shadow(0 0 16px rgb(42 157 255 / 0.22));
+    transition:
+      width 240ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      height 240ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 240ms ease;
+  }
+
+  .site-header.is-scrolled .brand :global(img) {
+    width: 2.35rem;
+    height: 2.35rem;
+    filter: drop-shadow(0 0 12px rgb(42 157 255 / 0.18));
+  }
+
+  .brand-copy {
+    display: grid;
+    line-height: 1;
+  }
+
+  .brand-copy strong {
+    font-family: var(--font-display);
+    font-size: 1.34rem;
+    font-weight: 720;
+    letter-spacing: -0.055em;
+    transition: font-size 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .site-header.is-scrolled .brand-copy strong {
+    font-size: 1.18rem;
+  }
+
+  .brand-copy small {
+    margin-top: 0.32rem;
+    color: #99a6b8;
+    font-size: 0.56rem;
+    font-weight: 760;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition:
+      margin-top 240ms ease,
+      opacity 240ms ease;
+  }
+
+  .site-header.is-scrolled .brand-copy small {
+    margin-top: 0.22rem;
+    opacity: 0.78;
+  }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.9rem, 1.65vw, 1.65rem);
+    margin-left: auto;
+  }
+
+  .desktop-nav a {
+    position: relative;
+    color: #c1c9d4;
+    font-size: 0.76rem;
+    font-weight: 650;
+    transition: color 160ms ease;
+  }
+
+  .desktop-nav a::after {
+    position: absolute;
+    right: 0;
+    bottom: -0.7rem;
+    left: 0;
+    height: 1px;
+    background: var(--blue-bright);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 180ms ease;
+    box-shadow: 0 0 12px var(--blue-bright);
+  }
+
+  .desktop-nav a:hover,
+  .desktop-nav a.is-active {
+    color: white;
+  }
+
+  .desktop-nav a:hover::after,
+  .desktop-nav a.is-active::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .header-cta {
+    min-height: 2.75rem;
+    margin-left: clamp(0.4rem, 1.2vw, 1rem);
+    padding-inline: 1rem;
+    font-size: 0.72rem;
+    transition:
+      min-height 240ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .site-header.is-scrolled .header-cta {
+    min-height: 2.5rem;
+  }
+
+  .mobile-nav {
+    display: none;
+    margin-left: auto;
+  }
+
+  .mobile-nav summary {
+    display: grid;
+    width: 2.8rem;
+    height: 2.8rem;
+    cursor: pointer;
+    list-style: none;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    background: rgb(255 255 255 / 0.04);
+  }
+
+  .mobile-nav summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu-icon {
+    position: relative;
+    display: block;
+    width: 1.2rem;
+    height: 0.9rem;
+  }
+
+  .menu-icon i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1), top 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .menu-icon i:first-child {
+    top: 0.18rem;
+  }
+
+  .menu-icon i:last-child {
+    top: 0.66rem;
+  }
+
+  .mobile-nav[open] .menu-icon i:first-child {
+    top: 0.42rem;
+    transform: rotate(45deg);
+  }
+
+  .mobile-nav[open] .menu-icon i:last-child {
+    top: 0.42rem;
+    transform: rotate(-45deg);
+  }
+
+  .mobile-nav nav {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: var(--gutter);
+    left: var(--gutter);
+    display: grid;
+    padding: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 1rem;
+    background: rgb(7 13 22 / 0.98);
+    box-shadow: 0 24px 80px rgb(0 0 0 / 0.46);
+  }
+
+  .mobile-nav nav a {
+    padding: 0.95rem 1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.07);
+    font-size: 0.9rem;
+    font-weight: 650;
+  }
+
+  .mobile-nav nav a.is-active {
+    color: #69bcff;
+  }
+
+  .mobile-nav nav a:last-child {
+    margin-top: 0.5rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: var(--blue);
+    text-align: center;
+  }
+
+  @media (max-width: 60rem) {
+    .desktop-nav,
+    .header-cta {
+      display: none;
+    }
+
+    .mobile-nav {
+      display: block;
+    }
+  }
+</style>

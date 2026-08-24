@@ -1,0 +1,78 @@
+---
+import studioSymbol from "../assets/company/studio-symbol.png";
+import MotionObserver from "../components/ui/MotionObserver.astro";
+import { company } from "../config/company";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `Fachadas e Comunicação Visual em Teresina | Studio`,
+  description =
+    "Fachadas, letras-caixa, adesivação, impressão digital, corte a laser e brindes em Teresina. Solicite um orçamento com a Studio Comunicação Visual.",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL("/og.png", Astro.site);
+const logoImage = new URL(studioSymbol.src, Astro.site);
+const localBusiness = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: company.name,
+  url: canonical.origin,
+  image: socialImage.href,
+  logo: logoImage.href,
+  telephone: company.phoneHref,
+  email: company.email,
+  foundingDate: String(company.foundingYear),
+  sameAs: [company.instagramUrl],
+  areaServed: {
+    "@type": "City",
+    name: company.address.city,
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: company.address.street,
+    addressLocality: company.address.city,
+    addressRegion: company.address.region,
+    postalCode: company.address.postalCode,
+    addressCountry: company.address.country,
+  },
+};
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#03070d" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href={studioSymbol.src} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={company.name} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Sua marca merece ser vista — Studio Comunicação Visual, Teresina" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <title>{title}</title>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <slot />
+    <MotionObserver />
+  </body>
+</html>

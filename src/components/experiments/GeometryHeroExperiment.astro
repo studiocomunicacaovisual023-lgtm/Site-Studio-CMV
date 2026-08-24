@@ -1,0 +1,709 @@
+---
+import { ArrowLeft, ArrowRight, RotateCw } from "@lucide/astro";
+import { Image } from "astro:assets";
+import heroFacade from "../../assets/company/studio-facade-hero-v3.png";
+import studioSymbol from "../../assets/company/studio-symbol.png";
+import { whatsappUrl } from "../../config/company";
+import { canvasVariants } from "../../features/canvas2d-hero/canvas-config";
+import {
+  geometryVariants,
+  type GeometryVariant,
+} from "../../features/webgl-hero/geometry-config";
+
+type ExperimentRenderer = "webgl" | "canvas2d";
+
+interface Props {
+  variant: GeometryVariant;
+  renderer?: ExperimentRenderer;
+}
+
+const { variant, renderer = "webgl" } = Astro.props;
+const isCanvas2D = renderer === "canvas2d";
+const current = isCanvas2D ? canvasVariants[variant] : geometryVariants[variant];
+const variants: Array<{
+  key: GeometryVariant;
+  href: string;
+}> = isCanvas2D
+  ? [
+      { key: "soft", href: "/experimentos/canvas-fluxo/" },
+      { key: "magnetic", href: "/experimentos/canvas-magnetico/" },
+      { key: "compositions", href: "/experimentos/canvas-composicoes/" },
+    ]
+  : [
+      { key: "soft", href: "/experimentos/geometria-suave/" },
+      { key: "magnetic", href: "/experimentos/geometria-magnetica/" },
+      { key: "compositions", href: "/experimentos/geometria-composicoes/" },
+    ];
+const rendererLabel = isCanvas2D ? "Canvas 2D" : "WebGL";
+const alternateLab = isCanvas2D
+  ? { label: "WebGL", href: "/experimentos/geometria-suave/" }
+  : { label: "Canvas 2D", href: "/experimentos/canvas-fluxo/" };
+---
+
+<header class="experiment-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="Voltar para a Home da Studio">
+      <Image src={studioSymbol} alt="" width={48} height={48} loading="eager" />
+      <span>
+        <strong>Studio</strong>
+        <small>Laboratório {rendererLabel}</small>
+      </span>
+    </a>
+    <span class="prototype-label">Protótipo isolado</span>
+    <a class="back-link" href="/">
+      <ArrowLeft aria-hidden="true" size={17} />
+      Voltar para a Home
+    </a>
+  </div>
+</header>
+
+<main id="experimento">
+  <section
+    class="experiment-hero"
+    data-render-root
+    data-render-state="loading"
+    data-renderer={renderer}
+    data-webgl-root={renderer === "webgl" ? true : undefined}
+    data-webgl-state={renderer === "webgl" ? "loading" : undefined}
+    data-geometry-variant={variant}
+    aria-labelledby="experiment-title"
+  >
+    <svg class="geometry-fallback" viewBox="0 0 1200 760" aria-hidden="true">
+      <path class="fallback-primary" d="M360 120 C 700 18, 842 244, 575 343 C 325 435, 470 706, 825 603" />
+      <path class="fallback-secondary" d="M315 169 C 665 66, 780 248, 543 329 C 353 394, 453 637, 786 555" />
+      <path d="M340 124 L 890 178 L 975 598 L 450 662 Z M 485 140 L 542 642 M 635 154 L 678 626 M 782 166 L 821 612 M 365 282 L 922 327 M 397 451 L 952 482" />
+      <circle cx="360" cy="120" r="7" />
+      <circle cx="575" cy="343" r="8" />
+      <circle cx="825" cy="603" r="7" />
+    </svg>
+    <canvas
+      class="geometry-canvas"
+      data-studio-webgl={renderer === "webgl" ? true : undefined}
+      data-studio-canvas2d={renderer === "canvas2d" ? true : undefined}
+      data-geometry-variant={variant}
+      aria-hidden="true"
+    ></canvas>
+    <div class="geometry-veil" aria-hidden="true"></div>
+    <div class="hero-light" aria-hidden="true"></div>
+
+    <div class="container experiment-grid">
+      <div class="hero-copy">
+        <div class="experiment-meta">
+          <span class="variant-index">{current.shortLabel}</span>
+          <span
+            class="runtime-status"
+            data-render-status
+            data-webgl-status={renderer === "webgl" ? true : undefined}
+            role="status"
+            aria-live="polite"
+          >
+            Preparando geometria…
+          </span>
+        </div>
+        <p class="eyebrow"><span></span> Comunicação visual em Teresina</p>
+        <h1 id="experiment-title">
+          <span>Sua marca</span>
+          <span>merece ser</span>
+          <strong>vista.</strong>
+        </h1>
+        <p class="hero-description">
+          Fachadas, letreiros e projetos que transformam negócios em pontos de
+          referência.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href={whatsappUrl} target="_blank" rel="noreferrer">
+            Solicitar orçamento
+            <ArrowRight aria-hidden="true" size={18} />
+          </a>
+          <a class="button button-secondary" href="/#projetos">
+            Conhecer projetos
+            <ArrowRight aria-hidden="true" size={18} />
+          </a>
+        </div>
+        <p class="variant-description">{current.description}</p>
+      </div>
+
+      <figure class="hero-visual">
+        <div class="image-shell">
+          <Image
+            src={heroFacade}
+            alt="Fachada da Studio Comunicação Visual ambientada em uma cena noturna azul"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(max-width: 768px) 100vw, 52vw"
+            format="webp"
+            quality={82}
+            loading="eager"
+            fetchpriority="high"
+          />
+          <div class="image-wash" aria-hidden="true"></div>
+          <div class="signal-line" aria-hidden="true"><span></span></div>
+          <figcaption>Fachada real da Studio <span>•</span> ambientação digital</figcaption>
+        </div>
+      </figure>
+    </div>
+
+    <aside class="container comparison" aria-labelledby="comparison-title">
+      <div class="comparison-copy">
+        <span>Experimentos {rendererLabel}</span>
+        <strong id="comparison-title">Comparar versões</strong>
+      </div>
+      <nav aria-label={`Alternar experimento ${rendererLabel}`}>
+        {variants.map((item) => (
+          <a
+            class:list={[{ active: item.key === variant }]}
+            href={item.href}
+            aria-current={item.key === variant ? "page" : undefined}
+          >
+            {(isCanvas2D ? canvasVariants : geometryVariants)[item.key].shortLabel}
+          </a>
+        ))}
+      </nav>
+      {variant === "compositions" && (
+        <button type="button" class="composition-control" data-composition-control>
+          <RotateCw aria-hidden="true" size={16} />
+          <span>Trocar: <strong data-composition-name>Curva Studio</strong></span>
+        </button>
+      )}
+      <small>
+        A Home atual permanece inalterada.
+        <a href={alternateLab.href}>Comparar com {alternateLab.label}</a>
+      </small>
+    </aside>
+  </section>
+</main>
+
+<script>
+  import { initializeStudioCanvas2D } from "../../features/canvas2d-hero/studio-canvas2d";
+  import { initializeStudioWebGL } from "../../features/webgl-hero/studio-webgl";
+
+  const cleanupStudioCanvas2D = initializeStudioCanvas2D();
+  const cleanupStudioWebGL = initializeStudioWebGL();
+  const cleanupExperiment = (): void => {
+    cleanupStudioCanvas2D();
+    cleanupStudioWebGL();
+  };
+  window.addEventListener("pagehide", cleanupExperiment, { once: true });
+</script>
+
+<style>
+  .experiment-header {
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    right: 0;
+    left: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    background: linear-gradient(to bottom, rgb(3 7 13 / 0.94), rgb(3 7 13 / 0.56));
+    backdrop-filter: blur(18px);
+  }
+
+  .header-inner {
+    display: flex;
+    min-height: 5.25rem;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .brand :global(img) {
+    width: 2.8rem;
+    height: 2.8rem;
+    filter: drop-shadow(0 0 16px rgb(42 157 255 / 0.22));
+  }
+
+  .brand > span {
+    display: grid;
+    line-height: 1;
+  }
+
+  .brand strong {
+    font-family: var(--font-display);
+    font-size: 1.34rem;
+    letter-spacing: -0.055em;
+  }
+
+  .brand small {
+    margin-top: 0.32rem;
+    color: #8290a4;
+    font-size: 0.52rem;
+    font-weight: 760;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .prototype-label {
+    margin-left: 0.5rem;
+    padding: 0.38rem 0.62rem;
+    border: 1px solid rgb(42 157 255 / 0.22);
+    border-radius: 999px;
+    background: rgb(8 120 249 / 0.08);
+    color: #70beff;
+    font-size: 0.55rem;
+    font-weight: 760;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-left: auto;
+    color: #b7c1ce;
+    font-size: 0.72rem;
+    font-weight: 720;
+  }
+
+  .experiment-hero {
+    position: relative;
+    min-height: 54rem;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 7.25rem 0 8.25rem;
+    background:
+      radial-gradient(circle at 52% 38%, rgb(8 120 249 / 0.12), transparent 28rem),
+      linear-gradient(110deg, #03070d, #050a12 58%, #02050a);
+  }
+
+  .geometry-canvas,
+  .geometry-fallback,
+  .geometry-veil,
+  .hero-light {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .geometry-canvas,
+  .geometry-fallback {
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .geometry-canvas {
+    opacity: 0;
+    transition: opacity 700ms ease;
+  }
+
+  .experiment-hero[data-render-state="ready"] .geometry-canvas {
+    opacity: 0.96;
+  }
+
+  .experiment-hero[data-renderer="canvas2d"][data-render-state="ready"] .geometry-canvas {
+    opacity: 0.9;
+  }
+
+  .geometry-fallback {
+    fill: none;
+    stroke: rgb(42 157 255 / 0.17);
+    stroke-width: 2;
+    opacity: 0.8;
+    transition: opacity 500ms ease;
+  }
+
+  .geometry-fallback .fallback-primary {
+    stroke: rgb(42 157 255 / 0.4);
+    stroke-width: 3;
+  }
+
+  .geometry-fallback .fallback-secondary {
+    stroke: rgb(100 186 255 / 0.2);
+  }
+
+  .geometry-fallback circle {
+    fill: #64baff;
+    stroke: rgb(42 157 255 / 0.28);
+    stroke-width: 10;
+  }
+
+  .experiment-hero[data-render-state="ready"] .geometry-fallback {
+    opacity: 0;
+  }
+
+  .geometry-veil {
+    z-index: -3;
+    background:
+      linear-gradient(90deg, rgb(3 7 13 / 0.78) 0%, rgb(3 7 13 / 0.45) 30%, transparent 58%),
+      radial-gradient(circle at 78% 50%, transparent 20%, rgb(3 7 13 / 0.16) 54%, rgb(3 7 13 / 0.54));
+    pointer-events: none;
+  }
+
+  .hero-light {
+    z-index: -2;
+    top: -45%;
+    left: 55%;
+    width: 24rem;
+    height: 74rem;
+    background: linear-gradient(180deg, transparent, rgb(8 120 249 / 0.36), transparent);
+    filter: blur(16px);
+    opacity: 0.36;
+    transform: rotate(28deg);
+    pointer-events: none;
+  }
+
+  .experiment-grid {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    min-height: 32rem;
+    align-items: center;
+    grid-template-columns: minmax(28rem, 0.86fr) minmax(30rem, 1.14fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 3;
+  }
+
+  .experiment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .variant-index,
+  .runtime-status {
+    padding: 0.38rem 0.62rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 999px;
+    background: rgb(3 7 13 / 0.5);
+    color: #8493a8;
+    font-size: 0.54rem;
+    font-weight: 760;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+  }
+
+  .variant-index {
+    border-color: rgb(42 157 255 / 0.34);
+    color: #69bcff;
+  }
+
+  .experiment-hero[data-render-state="ready"] .runtime-status {
+    color: #9ed0ff;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0 0 1.35rem;
+    color: #90a0b7;
+    font-size: 0.68rem;
+    font-weight: 780;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow span {
+    width: 2.8rem;
+    height: 1px;
+    background: var(--blue-bright);
+    box-shadow: 0 0 14px var(--blue-bright);
+  }
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3.45rem, 4.65vw, 5.15rem);
+    font-weight: 670;
+    letter-spacing: -0.075em;
+    line-height: 0.94;
+  }
+
+  h1 span,
+  h1 strong {
+    display: block;
+    white-space: nowrap;
+  }
+
+  h1 strong {
+    margin-top: 0.08em;
+    background: linear-gradient(120deg, #64baff, #0878f9 55%, #0054da);
+    background-clip: text;
+    color: transparent;
+    font-weight: 680;
+    text-shadow: 0 0 42px rgb(8 120 249 / 0.2);
+  }
+
+  .hero-description {
+    max-width: 31rem;
+    margin: 1.55rem 0 0;
+    color: #adb7c6;
+    font-size: clamp(1rem, 1.4vw, 1.13rem);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.8rem;
+  }
+
+  .variant-description {
+    max-width: 30rem;
+    margin: 1.25rem 0 0;
+    color: #728197;
+    font-size: 0.7rem;
+  }
+
+  .hero-visual {
+    position: relative;
+    min-width: 0;
+    margin: 0 -2.5rem 0 0;
+  }
+
+  .image-shell {
+    position: relative;
+    height: clamp(29rem, 42vw, 38rem);
+    overflow: hidden;
+    border: 1px solid rgb(100 186 255 / 0.18);
+    background: #07101c;
+    clip-path: polygon(13% 0, 100% 0, 100% 92%, 88% 100%, 0 100%, 0 15%);
+    box-shadow: -40px 40px 100px rgb(0 0 0 / 0.5), -18px 0 50px rgb(8 120 249 / 0.1);
+  }
+
+  .image-shell :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 64%;
+    filter: saturate(0.8) contrast(1.05) brightness(0.72);
+    transform: scale(1.02);
+  }
+
+  .image-wash {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, #03070d 0%, transparent 31%),
+      linear-gradient(0deg, rgb(3 7 13 / 0.76), transparent 45%),
+      linear-gradient(135deg, rgb(8 120 249 / 0.15), transparent 48%);
+  }
+
+  .signal-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 13%;
+    width: 1px;
+    background: linear-gradient(transparent, var(--blue-bright), transparent);
+    box-shadow: 0 0 18px var(--blue-bright);
+  }
+
+  .signal-line span {
+    position: absolute;
+    top: 29%;
+    left: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 5px rgb(8 120 249 / 0.24), 0 0 26px #2a9dff;
+  }
+
+  figcaption {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.4rem;
+    color: rgb(255 255 255 / 0.54);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  figcaption span {
+    margin-inline: 0.4rem;
+    color: var(--blue-bright);
+  }
+
+  .comparison {
+    position: absolute;
+    z-index: 5;
+    right: 0;
+    bottom: 1.25rem;
+    left: 0;
+    display: grid;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.11);
+    border-radius: 1rem;
+    background: rgb(8 14 23 / 0.88);
+    box-shadow: 0 22px 70px rgb(0 0 0 / 0.3);
+    grid-template-columns: auto 1fr auto;
+    gap: 0.8rem 1rem;
+    backdrop-filter: blur(18px);
+  }
+
+  .comparison-copy {
+    display: grid;
+    min-width: 10.5rem;
+    padding-inline: 0.45rem 1rem;
+    border-right: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .comparison-copy span,
+  .comparison > small {
+    color: #64748a;
+    font-size: 0.53rem;
+    font-weight: 720;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .comparison-copy strong {
+    margin-top: 0.15rem;
+    font-family: var(--font-display);
+    font-size: 0.86rem;
+  }
+
+  .comparison nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .comparison nav a,
+  .composition-control {
+    min-height: 2.6rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgb(255 255 255 / 0.09);
+    border-radius: 0.65rem;
+    background: rgb(255 255 255 / 0.025);
+    color: #8e9caf;
+    font: inherit;
+    font-size: 0.64rem;
+    font-weight: 740;
+    text-align: center;
+    transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+  }
+
+  .comparison nav a:hover,
+  .comparison nav a.active {
+    border-color: rgb(42 157 255 / 0.42);
+    background: rgb(8 120 249 / 0.12);
+    color: #79c2ff;
+  }
+
+  .composition-control {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.5rem;
+    border-color: rgb(42 157 255 / 0.24);
+    color: #91cfff;
+  }
+
+  .composition-control strong {
+    color: white;
+  }
+
+  .comparison > small {
+    grid-column: 1 / -1;
+    padding: 0 0.45rem;
+  }
+
+  .comparison > small a {
+    margin-left: 0.65rem;
+    color: #79c2ff;
+  }
+
+  @media (max-width: 64rem) {
+    .experiment-grid {
+      grid-template-columns: minmax(22rem, 0.88fr) minmax(24rem, 1.12fr);
+    }
+
+    .hero-visual {
+      margin-right: -5rem;
+    }
+
+    .comparison > small {
+      display: none;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    .prototype-label {
+      display: none;
+    }
+
+    .back-link {
+      font-size: 0;
+    }
+
+    .back-link :global(svg) {
+      width: 22px;
+      height: 22px;
+    }
+
+    .experiment-hero {
+      min-height: 0;
+      padding: 6.75rem 0 15.5rem;
+    }
+
+    .experiment-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 13.3vw, 4.2rem);
+    }
+
+    .hero-actions {
+      display: grid;
+    }
+
+    .hero-visual {
+      margin: 0 calc(var(--gutter) * -1);
+    }
+
+    .image-shell {
+      height: min(29rem, 118vw);
+      border-right: 0;
+      border-left: 0;
+    }
+
+    .comparison {
+      right: var(--gutter);
+      bottom: 1rem;
+      left: var(--gutter);
+      grid-template-columns: 1fr;
+    }
+
+    .comparison-copy {
+      padding-bottom: 0.6rem;
+      border-right: 0;
+      border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    }
+
+    .comparison nav a {
+      padding-inline: 0.35rem;
+      font-size: 0.57rem;
+    }
+
+    .composition-control {
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .geometry-canvas,
+    .geometry-fallback,
+    .comparison nav a,
+    .composition-control {
+      transition: none;
+    }
+  }
+</style>

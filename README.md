@@ -4,7 +4,7 @@ Novo site institucional e comercial da **Studio Comunicação Visual**, empresa 
 
 O projeto nasce com foco em transformar o site atual em uma presença digital mais moderna, rápida e orientada a resultado, valorizando os trabalhos realizados pela empresa e facilitando o contato de novos clientes.
 
-> **Status:** planejamento e fundação técnica.
+> **Status:** fundação concluída e primeira versão da Home em homologação.
 
 ---
 
@@ -667,16 +667,21 @@ Isso evita adicionar complexidade ao site atual antes de existir uma necessidade
 - [x] Estratégia inicial de imagens definida
 - [x] Padrão de Content Collections definido
 - [x] Ambiente alvo definido: Node + pnpm + lockfile
-- [ ] Inicializar projeto Astro
-- [ ] Configurar `package.json` e `pnpm-lock.yaml`
-- [ ] Configurar Tailwind CSS 4 via Vite
-- [ ] Criar `src/content.config.ts`
-- [ ] Criar schemas de `projects` e `services`
-- [ ] Criar design tokens
-- [ ] Implementar Header e Hero
-- [ ] Implementar serviços
-- [ ] Implementar portfólio
-- [ ] Implementar SEO técnico
+- [x] Inicializar projeto Astro
+- [x] Configurar `package.json` e `pnpm-lock.yaml`
+- [x] Configurar Tailwind CSS 4 via Vite
+- [x] Criar `src/content.config.ts`
+- [x] Criar schemas de `projects` e `services`
+- [x] Criar design tokens
+- [x] Implementar Header e Hero
+- [x] Implementar serviços
+- [x] Implementar portfólio
+- [x] Implementar processo, institucional, clientes, CTA e Footer
+- [x] Implementar SEO técnico, sitemap, robots.txt, JSON-LD e Open Graph
+- [x] Adicionar validações automatizadas de estrutura e conversão
+- [x] Validar typecheck, build estático e dependências de produção
+- [ ] Substituir e aprovar todo o acervo provisório
+- [ ] Validar contatos, redes sociais e textos finais com a Studio
 - [ ] Criar preview na Vercel
 - [ ] Revisão e homologação
 - [ ] Publicação em produção

@@ -1,0 +1,126 @@
+---
+import { Image } from "astro:assets";
+import clientOne from "../../assets/company/studio-client-1.jpg";
+import clientTwo from "../../assets/company/studio-client-2.jpg";
+import clientThree from "../../assets/company/studio-client-3.jpg";
+
+const clients = [
+  { name: "Trend Marketing", image: clientOne },
+  { name: "Academia Demóstenes", image: clientTwo },
+  { name: "OAB Piauí", image: clientThree },
+];
+---
+
+<section class="clients" id="clientes" aria-labelledby="clients-title">
+  <div class="container clients-inner">
+    <div class="clients-copy" data-reveal>
+      <p class="section-kicker">Marcas atendidas</p>
+      <h2 id="clients-title">Presença se constrói com confiança.</h2>
+      <p>Algumas marcas presentes na trajetória institucional da Studio.</p>
+    </div>
+    <div class="client-list">
+      {clients.map((client, index) => (
+        <figure data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+          <Image src={client.image} alt={`Marca ${client.name}`} width={280} loading="lazy" />
+          <figcaption>{client.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .clients {
+    padding-block: clamp(2.75rem, 5vw, 4rem);
+    border-top: 1px solid #dce3eb;
+    background: #f3f6fa;
+    color: #07101b;
+  }
+
+  .clients-inner {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(15rem, 0.65fr) minmax(0, 1.35fr);
+    gap: clamp(2rem, 4.5vw, 4rem);
+  }
+
+  .clients-copy h2 {
+    max-width: 17ch;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3vw, 2.7rem);
+    font-weight: 650;
+    letter-spacing: -0.055em;
+    line-height: 1.08;
+  }
+
+  .clients-copy > p:last-child {
+    max-width: 27rem;
+    margin: 0.85rem 0 0;
+    color: #697586;
+    font-size: 0.8rem;
+  }
+
+  .client-list {
+    display: grid;
+    padding: 0.55rem;
+    border: 1px solid #dce3eb;
+    border-radius: 1.15rem;
+    background: rgb(255 255 255 / 0.74);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  figure {
+    display: grid;
+    min-height: 7rem;
+    margin: 0;
+    padding: 0.8rem;
+    border: 1px solid #e5eaf0;
+    border-radius: 0.75rem;
+    background: #fbfcfe;
+    place-items: center;
+  }
+
+  figure :global(img) {
+    width: 100%;
+    height: 3.85rem;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  figcaption {
+    color: #657285;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 48rem) {
+    .clients-inner {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .client-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    figure {
+      min-height: 6.25rem;
+      padding: 0.55rem;
+    }
+
+    figure :global(img) {
+      height: 3rem;
+    }
+
+    figcaption {
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+    }
+  }
+</style>

@@ -1,0 +1,12 @@
+---
+import type { CanvasVariant } from "../../features/canvas2d-hero/canvas-config";
+import GeometryHeroExperiment from "./GeometryHeroExperiment.astro";
+
+interface Props {
+  variant: CanvasVariant;
+}
+
+const { variant } = Astro.props;
+---
+
+<GeometryHeroExperiment variant={variant} renderer="canvas2d" />

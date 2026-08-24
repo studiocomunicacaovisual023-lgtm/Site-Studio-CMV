@@ -1,0 +1,447 @@
+---
+import {
+  ArrowUpRight,
+  Building2,
+  Gift,
+  Layers,
+  Lightbulb,
+  PenTool,
+  Printer,
+  SignpostBig,
+  Truck,
+  Type,
+} from "@lucide/astro";
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import facadeServiceImage from "../../assets/company/studio-acai-facade-reference.jpg";
+import letterBoxImage from "../../assets/company/studio-facade.jpg";
+import { whatsappUrl } from "../../config/company";
+import { buildWhatsAppUrl } from "../../utils/whatsapp";
+
+interface Props {
+  services: CollectionEntry<"services">[];
+}
+
+const { services } = Astro.props;
+const featured = services.filter((service) => service.data.featured);
+const compact = services.filter((service) => !service.data.featured);
+const featuredImages = [
+  {
+    src: facadeServiceImage,
+    alt: "Fachada roxa com revestimento, símbolo colorido e letras-caixa Açaí Sabor do Pará",
+    label: "Imagem de referência",
+  },
+  {
+    src: letterBoxImage,
+    alt: "Letras-caixa aplicadas em uma fachada comercial",
+    label: "Acervo Studio",
+  },
+] as const;
+const iconMap = {
+  building: Building2,
+  letter: Type,
+  layers: Layers,
+  lightbulb: Lightbulb,
+  truck: Truck,
+  signpost: SignpostBig,
+  printer: Printer,
+  "pen-tool": PenTool,
+  gift: Gift,
+};
+---
+
+<section class="services section-space" id="servicos" aria-labelledby="services-title">
+  <div class="container">
+    <header class="section-heading" data-reveal>
+      <div>
+        <p class="section-kicker">O que fazemos</p>
+        <h2 class="section-title" id="services-title">Soluções que dão forma à sua presença.</h2>
+      </div>
+      <p class="section-intro">
+        Do primeiro traço à instalação, conectamos projeto, produção e acabamento
+        para sua marca ocupar o espaço com clareza.
+      </p>
+    </header>
+
+    <div class="featured-grid">
+      {featured.map((service, index) => {
+        const Icon = iconMap[service.data.icon];
+        const image = featuredImages[index] ?? featuredImages[0];
+        const serviceUrl = buildWhatsAppUrl(
+          `Olá! Vi no site da Studio o serviço de ${service.data.title} e gostaria de solicitar um orçamento.`,
+        );
+        return (
+          <a class="featured-card" href={serviceUrl} target="_blank" rel="noreferrer" aria-label={`Solicitar orçamento para ${service.data.title}`} data-reveal style={`--reveal-delay: ${index * 90}ms`}>
+            <Image
+              src={image.src}
+              alt={image.alt}
+              widths={[640, 960, 1440, 1920]}
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 48vw, 42vw"
+              format="webp"
+              loading="lazy"
+              quality={80}
+              style={index === 0 ? "object-position: center 20%;" : undefined}
+            />
+            <span class="reference-label">{image.label}</span>
+            <div class="card-overlay" aria-hidden="true"></div>
+            <div class="featured-content">
+              <span class="icon-shell"><Icon aria-hidden="true" size={25} stroke-width={1.5} /></span>
+              <div>
+                <p>0{index + 1} / Destaque</p>
+                <h3>{service.data.title}</h3>
+                <span>{service.data.shortDescription}</span>
+              </div>
+              <ArrowUpRight class="arrow" aria-hidden="true" size={21} />
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    <div class="compact-grid">
+      {compact.map((service, index) => {
+        const Icon = iconMap[service.data.icon];
+        const serviceUrl = buildWhatsAppUrl(
+          `Olá! Vi no site da Studio o serviço de ${service.data.title} e gostaria de solicitar um orçamento.`,
+        );
+        return (
+          <a class="compact-card" href={serviceUrl} target="_blank" rel="noreferrer" aria-label={`Solicitar orçamento para ${service.data.title}`} data-reveal style={`--reveal-delay: ${index * 55}ms`}>
+            <Icon aria-hidden="true" size={25} stroke-width={1.5} />
+            <div>
+              <h3>{service.data.title}</h3>
+              <p>{service.data.shortDescription}</p>
+            </div>
+            <ArrowUpRight class="compact-arrow" aria-hidden="true" size={17} />
+          </a>
+        );
+      })}
+    </div>
+
+    <div class="service-note" data-reveal>
+      <span>Não encontrou exatamente o que precisa?</span>
+      <a href={whatsappUrl} target="_blank" rel="noreferrer">
+        Conte sua ideia
+        <ArrowUpRight aria-hidden="true" size={17} />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    position: relative;
+    overflow: hidden;
+    background: #f3f6fa;
+    color: #07101b;
+  }
+
+  .services::before {
+    position: absolute;
+    top: -6rem;
+    right: -12rem;
+    width: 36rem;
+    height: 24rem;
+    border: 1px solid rgb(8 120 249 / 0.12);
+    border-radius: 50%;
+    content: "";
+    transform: rotate(-17deg);
+  }
+
+  .section-heading {
+    position: relative;
+    display: grid;
+    align-items: end;
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.65fr);
+    gap: 4rem;
+  }
+
+  .section-title {
+    max-width: 13ch;
+  }
+
+  .section-intro {
+    margin-bottom: 0.35rem;
+    color: #5d6878;
+  }
+
+  .featured-grid {
+    display: grid;
+    margin-top: 3.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .featured-card {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: #07101b;
+    color: white;
+  }
+
+  .featured-card:nth-child(2) {
+    margin-top: 1.375rem;
+  }
+
+  .featured-card :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .featured-card:nth-child(2) :global(img) {
+    object-position: center 24%;
+  }
+
+  .featured-card:hover :global(img),
+  .featured-card:focus-visible :global(img) {
+    transform: scale(1.035);
+  }
+
+  .featured-card:focus-visible {
+    outline-offset: 0.35rem;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 18%, rgb(3 7 13 / 0.92));
+  }
+
+  .reference-label {
+    position: absolute;
+    z-index: 2;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.38rem 0.58rem;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 999px;
+    background: rgb(3 7 13 / 0.62);
+    color: #c9d6e5;
+    font-size: 0.54rem;
+    font-weight: 780;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+  }
+
+  .featured-content {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    display: grid;
+    align-items: end;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    color: white;
+  }
+
+  .icon-shell {
+    display: grid;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid rgb(42 157 255 / 0.32);
+    border-radius: 0.8rem;
+    background: rgb(8 120 249 / 0.18);
+    color: #66baff;
+    place-items: center;
+    backdrop-filter: blur(12px);
+  }
+
+  .featured-content p {
+    margin: 0 0 0.2rem;
+    color: #6ab8ff;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .featured-content h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.8vw, 2.35rem);
+    font-weight: 630;
+    letter-spacing: -0.055em;
+  }
+
+  .featured-content div > span {
+    display: block;
+    max-width: 33rem;
+    margin-top: 0.3rem;
+    color: #bec8d5;
+    font-size: 0.78rem;
+  }
+
+  .arrow {
+    margin-bottom: 0.4rem;
+    color: #66baff;
+  }
+
+  .compact-grid {
+    display: grid;
+    margin-top: 2rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .compact-card {
+    display: grid;
+    min-height: 7.75rem;
+    align-items: start;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    padding: 1.45rem;
+    border: 1px solid #dce3eb;
+    border-radius: 1rem;
+    background: rgb(255 255 255 / 0.66);
+    color: #07101b;
+    transition: border-color 220ms ease, background 220ms ease, transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .compact-card:hover,
+  .compact-card:focus-visible {
+    border-color: rgb(8 120 249 / 0.32);
+    background: white;
+    transform: translateY(-0.2rem);
+  }
+
+  .compact-card:focus-visible {
+    outline-offset: 0.25rem;
+  }
+
+  .compact-card :global(svg) {
+    color: var(--blue);
+  }
+
+  .compact-card .compact-arrow {
+    opacity: 0.56;
+    transition: opacity 180ms ease, transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .compact-card:hover .compact-arrow,
+  .compact-card:focus-visible .compact-arrow {
+    opacity: 1;
+    transform: translate(0.12rem, -0.12rem);
+  }
+
+  .compact-card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.96rem;
+    font-weight: 680;
+    letter-spacing: -0.035em;
+  }
+
+  .compact-card p {
+    margin: 0.45rem 0 0;
+    color: #647081;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .service-note {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    margin-top: 1.75rem;
+    color: #637081;
+    font-size: 0.75rem;
+  }
+
+  .service-note a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #086fe2;
+    font-weight: 800;
+  }
+
+  @media (max-width: 52rem) {
+    .section-heading,
+    .featured-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .featured-card:nth-child(2) {
+      margin-top: 0;
+    }
+
+    .compact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .featured-card {
+      aspect-ratio: 16 / 10;
+    }
+
+    .featured-content {
+      grid-template-columns: auto 1fr;
+    }
+
+    .featured-content > :global(svg) {
+      display: none;
+    }
+
+    .compact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    .compact-card {
+      min-height: 6.5rem;
+      align-content: start;
+      grid-template-columns: 1fr auto;
+      gap: 0.55rem;
+      padding: 1rem;
+    }
+
+    .compact-card :global(svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .compact-card > div {
+      grid-column: 1 / -1;
+    }
+
+    .compact-card .compact-arrow {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .compact-card h3 {
+      font-size: 0.88rem;
+    }
+
+    .compact-card p {
+      display: -webkit-box;
+      margin-top: 0.3rem;
+      overflow: hidden;
+      font-size: 0.75rem;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .service-note {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+  }
+
+  @media (max-width: 22rem) {
+    .compact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
