@@ -14,7 +14,7 @@ import {
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import facadeServiceImage from "../../assets/company/studio-acai-facade-reference.jpg";
-import letterBoxImage from "../../assets/company/studio-facade.jpg";
+import fleetWrapImage from "../../assets/generated/studio-fleet-wrap-mixed.png";
 import { whatsappUrl } from "../../config/company";
 import { buildWhatsAppUrl } from "../../utils/whatsapp";
 
@@ -32,9 +32,9 @@ const featuredImages = [
     label: "Imagem de referência",
   },
   {
-    src: letterBoxImage,
-    alt: "Letras-caixa aplicadas em uma fachada comercial",
-    label: "Acervo Studio",
+    src: fleetWrapImage,
+    alt: "Composição de um carro iNET amarelo, uma van Açaí Gurupi verde e roxa e um ônibus preto e azul envelopados",
+    label: null,
   },
 ] as const;
 const iconMap = {
@@ -75,14 +75,14 @@ const iconMap = {
             <Image
               src={image.src}
               alt={image.alt}
-              widths={[640, 960, 1440, 1920]}
+              widths={[640, 960, 1440, image.src.width]}
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 48vw, 42vw"
               format="webp"
               loading="lazy"
               quality={80}
               style={index === 0 ? "object-position: center 20%;" : undefined}
             />
-            <span class="reference-label">{image.label}</span>
+            {image.label && <span class="reference-label">{image.label}</span>}
             <div class="card-overlay" aria-hidden="true"></div>
             <div class="featured-content">
               <span class="icon-shell"><Icon aria-hidden="true" size={25} stroke-width={1.5} /></span>
@@ -194,7 +194,7 @@ const iconMap = {
   }
 
   .featured-card:nth-child(2) :global(img) {
-    object-position: center 24%;
+    object-position: center;
   }
 
   .featured-card:hover :global(img),
@@ -210,6 +210,10 @@ const iconMap = {
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, transparent 18%, rgb(3 7 13 / 0.92));
+  }
+
+  .featured-card:nth-child(2) .card-overlay {
+    background: linear-gradient(180deg, transparent 40%, rgb(3 7 13 / 0.2) 58%, rgb(3 7 13 / 0.92));
   }
 
   .reference-label {

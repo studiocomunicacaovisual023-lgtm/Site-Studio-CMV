@@ -1,7 +1,7 @@
 ---
-title: Adesivação
-shortDescription: Envelopamento de veículos, vitrines e superfícies com acabamento limpo.
+title: Adesivos
+shortDescription: Padronização de frotas para sua marca ser reconhecida em cada trajeto.
 icon: truck
-order: 5
-featured: false
+order: 2
+featured: true
 ---

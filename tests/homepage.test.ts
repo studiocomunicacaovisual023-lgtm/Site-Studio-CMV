@@ -21,6 +21,13 @@ describe("homepage comercial", () => {
     expect(html).toContain('id="processo"');
     expect(html).toContain('id="sobre"');
     expect(html).toContain('id="contato"');
+
+    const heroDescription = html.match(
+      /<p\b[^>]*class="hero-description"[^>]*>([\s\S]*?)<\/p>/,
+    )?.[1]?.replace(/\s+/g, " ").trim();
+    expect(heroDescription).toBe(
+      "Fachadas, letreiros e comunicação visual em Teresina — da criação à instalação.",
+    );
   });
 
   it("gera conversão por WhatsApp e dados estruturados locais", () => {
@@ -133,7 +140,23 @@ describe("homepage comercial", () => {
     }
   });
 
-  it("usa a nova fachada vertical na Home e nos laboratórios", async () => {
+  it("usa a fachada diurna fornecida na Hero sem ampliar o arquivo original", async () => {
+    const heroAsset = resolve("src/assets/company/studio-facade-hero-daylight.png");
+    const heroSource = readSource("src/components/sections/Hero.astro");
+
+    expect(existsSync(heroAsset), `ativo ausente: ${heroAsset}`).toBe(true);
+    const metadata = await sharp(heroAsset).metadata();
+    expect(metadata.width).toBe(1449);
+    expect(metadata.height).toBe(1086);
+    expect(heroSource).toContain("studio-facade-hero-daylight.png");
+    expect(heroSource).not.toContain("studio-facade-hero-v3.png");
+    expect(heroSource.match(/widths=\{\[640, 960, 1280, 1449\]\}/g)).toHaveLength(2);
+    expect(heroSource).toContain("Fachada azul da Studio Comunicação Visual com letreiro branco");
+    expect(heroSource).not.toContain("cena noturna");
+    expect(heroSource).not.toContain("ambientação digital");
+  });
+
+  it("preserva a fachada vertical anterior nos laboratórios", async () => {
     const heroAsset = resolve(
       "src/assets/company/studio-facade-hero-v3.png",
     );
@@ -144,7 +167,6 @@ describe("homepage comercial", () => {
     expect(metadata.height).toBeGreaterThan(metadata.width ?? 0);
 
     for (const sourcePath of [
-      resolve("src/components/sections/Hero.astro"),
       resolve("src/components/experiments/GeometryHeroExperiment.astro"),
     ]) {
       const source = readFileSync(sourcePath, "utf8");
@@ -171,20 +193,51 @@ describe("homepage comercial", () => {
     expect(heroSource).not.toContain("data-studio-webgl");
   });
 
-  it("mantém a fachada clara, com a quina superior visível e sem esconder o índice visual", () => {
+  it("mostra a fachada inteira em um card proporcional, sem zoom interno", () => {
     const heroSource = readFileSync(
       resolve("src/components/sections/Hero.astro"),
       "utf8",
     );
 
-    expect(heroSource).toContain("height: clamp(30rem, 43vw, 39rem)");
-    expect(heroSource).toContain("object-position: center 45%");
-    expect(heroSource).not.toContain("object-position: center center");
-    expect(heroSource).not.toContain("object-position: center 62%");
-    expect(heroSource).not.toContain("object-position: center 66%");
+    expect(heroSource).toContain("aspect-ratio: 6 / 5");
+    expect(heroSource).not.toContain("height: clamp(30rem, 43vw, 39rem)");
+    expect(heroSource).not.toContain("height: min(27rem, 110vw)");
+    expect(heroSource).toContain("object-fit: cover");
+    expect(heroSource).toContain("object-position: center");
+    expect(heroSource).toMatch(/\.facade-scene\s*\{[^}]*inset: 0;/);
+    expect(heroSource).not.toContain("--facade-crop-scale");
+    expect(heroSource).not.toContain("--hero-depth-x");
+    expect(heroSource).not.toContain("facade-mobile-depth");
+    expect(heroSource).not.toContain("margin-right: -5rem");
     expect(heroSource).toContain("brightness(1.02)");
     expect(heroSource).toContain("bottom: 1.35rem");
     expect(heroSource).not.toContain("rgb(3 7 13 / 0.78)");
+  });
+
+  it("mantém o topo, as laterais e a base da loja dentro do enquadramento em diferentes larguras", async () => {
+    const heroSource = readSource("src/components/sections/Hero.astro");
+    const aspect = heroSource.match(/\.image-shell\s*\{[^}]*aspect-ratio:\s*(\d+)\s*\/\s*(\d+)/);
+    expect(aspect).not.toBeNull();
+    const ratio = Number(aspect![1]) / Number(aspect![2]);
+    const { width = 0, height = 0 } = await sharp(
+      resolve("src/assets/company/studio-facade-hero-daylight.png"),
+    ).metadata();
+    // Limites da fachada na imagem fornecida, excluindo os muros vizinhos.
+    const facade = { left: 165, top: 10, right: 1288, bottom: 986 };
+
+    for (const cardWidth of [320, 390, 480, 600, 768]) {
+      const cardHeight = cardWidth / ratio;
+      const fit = Math.max(cardWidth / width, cardHeight / height);
+      const visibleWidth = cardWidth / fit;
+      const visibleHeight = cardHeight / fit;
+      const left = (width - visibleWidth) / 2;
+      const top = (height - visibleHeight) / 2;
+
+      expect(left).toBeLessThanOrEqual(facade.left);
+      expect(top).toBeLessThanOrEqual(facade.top);
+      expect(left + visibleWidth).toBeGreaterThanOrEqual(facade.right);
+      expect(top + visibleHeight).toBeGreaterThanOrEqual(facade.bottom);
+    }
   });
 
   it("mantém a navegação fixa, compacta ao rolar e não esconde as âncoras", () => {
@@ -303,7 +356,9 @@ describe("homepage comercial", () => {
 
     expect(servicesSource).toContain("studio-acai-facade-reference.jpg");
     expect(servicesSource).not.toContain("stock-facade-service-unsplash.jpg");
-    expect(servicesSource).toContain("studio-facade.jpg");
+    expect(servicesSource).toContain("studio-fleet-wrap-mixed.png");
+    expect(servicesSource).not.toContain('"../../assets/generated/studio-fleet-wrap.png"');
+    expect(servicesSource).not.toContain("studio-facade.jpg");
     expect(facadeProjectSource).toContain(
       "studio-cannil-pet-facade-reference.jpg",
     );
@@ -316,6 +371,50 @@ describe("homepage comercial", () => {
     expect(aboutSource).toContain("studio-impressora.png");
     expect(aboutSource).toContain("studio-design.jpg");
     expect(aboutSource).not.toContain("stock-printshop-b-unsplash.jpg");
+  });
+
+  it("destaca Fachadas e Adesivos e mantém Letras-caixa no catálogo compacto", () => {
+    const html = readFileSync(homepagePath, "utf8");
+    const featuredCards = [...html.matchAll(/<a\b[^>]*class="featured-card"[^>]*>[\s\S]*?<\/a>/g)]
+      .map((match) => match[0]);
+    const compactCards = [...html.matchAll(/<a\b[^>]*class="compact-card"[^>]*>[\s\S]*?<\/a>/g)]
+      .map((match) => match[0]);
+    const facadeCard = featuredCards[0] ?? "";
+    const adhesiveCard = featuredCards[1] ?? "";
+
+    expect(featuredCards).toHaveLength(2);
+    expect(facadeCard).toMatch(/<h3\b[^>]*>Fachadas<\/h3>/);
+    expect(facadeCard).toContain("studio-acai-facade-reference");
+    expect(facadeCard).toContain("Imagem de referência");
+    expect(facadeCard).toContain('class="reference-label"');
+    expect(adhesiveCard).toMatch(/<h3\b[^>]*>Adesivos<\/h3>/);
+    expect(adhesiveCard).toContain("Padronização de frotas");
+    expect(adhesiveCard).toContain("studio-fleet-wrap-mixed");
+    expect(adhesiveCard).toContain("carro iNET amarelo");
+    expect(adhesiveCard).toContain("van Açaí Gurupi verde e roxa");
+    expect(adhesiveCard).toContain("ônibus preto e azul envelopados");
+    expect(adhesiveCard).not.toContain("Imagem gerada por IA");
+    expect(adhesiveCard).not.toContain('class="reference-label"');
+    expect(adhesiveCard).not.toContain("Acervo Studio");
+    expect(adhesiveCard).not.toContain("Letras-caixa");
+    expect(adhesiveCard).toContain('aria-label="Solicitar orçamento para Adesivos"');
+    expect(decodeURIComponent(adhesiveCard)).toContain("serviço de Adesivos");
+    expect(compactCards).toHaveLength(8);
+    expect(compactCards.some((card) => /<h3\b[^>]*>Letras-caixa<\/h3>/.test(card))).toBe(true);
+    expect(compactCards.some((card) => /<h3\b[^>]*>Adesivos<\/h3>/.test(card))).toBe(false);
+  });
+
+  it("carrega a composição de três veículos diferentes sem tag e com enquadramento próprio", async () => {
+    const fleetAsset = resolve("src/assets/generated/studio-fleet-wrap-mixed.png");
+    const servicesSource = readSource("src/components/sections/Services.astro");
+
+    expect(existsSync(fleetAsset), `ativo ausente: ${fleetAsset}`).toBe(true);
+    const { width = 0, height = 0 } = await sharp(fleetAsset).metadata();
+    expect(width).toBeGreaterThanOrEqual(1600);
+    expect(width / height).toBeCloseTo(16 / 9, 1);
+    expect(servicesSource).not.toContain('label: "Imagem gerada por IA"');
+    expect(servicesSource).toContain('{image.label && <span class="reference-label">{image.label}</span>}');
+    expect(servicesSource).toMatch(/\.featured-card:nth-child\(2\) :global\(img\)\s*\{\s*object-position: center/);
   });
 
   it("oferece conversão móvel persistente e uma assinatura de progresso acessível", () => {
@@ -503,11 +602,26 @@ describe("homepage comercial", () => {
     );
 
     expect(heroSource).toContain("(max-width: 1280px) 58vw");
-    expect(heroSource).toContain("font-size: 0.78rem");
+    expect(heroSource).toContain("font-size: 0.875rem");
     expect(clientsSource).toContain("font-size: 0.7rem");
     expect(footerSource).not.toContain("font-size: 0.51rem");
     expect(footerSource).not.toContain("font-size: 0.61rem");
     expect(footerSource).not.toContain("font-size: 0.68rem");
+  });
+
+  it("mantém os quatro diferenciais legíveis sem reduzir os textos no celular", () => {
+    const heroSource = readSource("src/components/sections/Hero.astro");
+    const paragraphRules = [...heroSource.matchAll(/\.proof-item p\s*\{([^}]+)\}/g)];
+    const paragraphStyle = paragraphRules[0]?.[1] ?? "";
+    const html = readFileSync(homepagePath, "utf8");
+
+    expect(html.match(/data-gsap-hero-proof/g)).toHaveLength(4);
+    // Um único estilo de parágrafo evita que o breakpoint móvel volte a diminuir a fonte.
+    expect(paragraphRules).toHaveLength(1);
+    expect(paragraphStyle).toContain("color: var(--muted)");
+    expect(paragraphStyle).toContain("font-size: 0.875rem");
+    expect(paragraphStyle).toContain("line-height: 1.55");
+    expect(heroSource).toMatch(/\.proof-item h2\s*\{[^}]*font-size: 0\.75rem/);
   });
 
   it("mantém a prova de experiência verdadeira sem depender do ano atual", () => {
@@ -520,11 +634,35 @@ describe("homepage comercial", () => {
       "utf8",
     );
 
-    expect(heroSource).toContain("Mais de 10 anos criando presença");
+    expect(heroSource).toContain("Mais de 10 anos de experiência");
+    expect(heroSource).toContain('class="experience-number" aria-hidden="true">+10</strong>');
     expect(aboutSource).toContain("<strong>+10</strong>");
     expect(aboutSource).toContain("Há mais de 10 anos");
     expect(aboutSource).not.toContain("new Date().getFullYear() - company.foundingYear");
     expect(aboutSource).not.toContain("Desde {company.foundingYear}");
+  });
+
+  it("destaca a experiência antes do título da Hero, sem repetir a prova abaixo dos botões", () => {
+    const html = readFileSync(homepagePath, "utf8");
+    const heroHtml = html.match(/<section\b[^>]*id="inicio"[^>]*>([\s\S]*?)<\/section>/)?.[1] ?? "";
+    const heroSource = readSource("src/components/sections/Hero.astro");
+    const experiencePosition = heroHtml.indexOf('class="hero-experience"');
+    const titlePosition = heroHtml.indexOf('id="hero-title"');
+
+    expect(experiencePosition).toBeGreaterThanOrEqual(0);
+    expect(titlePosition).toBeGreaterThan(experiencePosition);
+    expect(heroHtml.match(/class="hero-experience"/g)).toHaveLength(1);
+    expect(heroHtml).toContain("Comunicação visual em Teresina");
+    expect(heroHtml).toContain('class="sr-only"');
+    expect(heroHtml).toContain("Mais de 10 anos de experiência");
+    expect(heroHtml).not.toContain("Mais de 10 anos criando presença");
+    expect(heroSource).not.toContain("hero-trust");
+    expect(heroSource).not.toContain("ShieldCheck");
+    expect(heroSource).toContain('class="hero-experience" data-gsap-hero-eyebrow');
+    expect(heroSource).toMatch(/\.experience-number\s*\{[^}]*color: var\(--blue-bright\)/);
+    expect(heroSource).toMatch(/\.experience-label\s*\{[^}]*color: var\(--text\)/);
+    expect(heroSource).toMatch(/\.experience-stat\s*\{[^}]*flex-wrap: wrap/);
+    expect(heroSource).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.hero-experience,/);
   });
 
   it("integra o Instagram oficial sem incorporar scripts de terceiros", () => {

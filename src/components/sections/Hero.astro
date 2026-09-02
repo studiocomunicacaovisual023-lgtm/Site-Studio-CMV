@@ -3,12 +3,11 @@ import {
   ArrowRight,
   BadgeCheck,
   MessagesSquare,
-  ShieldCheck,
   Sparkles,
   Wrench,
 } from "@lucide/astro";
 import { Image } from "astro:assets";
-import heroFacade from "../../assets/company/studio-facade-hero-v3.png";
+import heroFacade from "../../assets/company/studio-facade-hero-daylight.png";
 import { whatsappUrl } from "../../config/company";
 
 const proofPoints = [
@@ -45,15 +44,22 @@ const proofPoints = [
   <div class="hero-light" data-gsap-hero-light aria-hidden="true"></div>
   <div class="container hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow" data-gsap-hero-eyebrow><span></span> Comunicação visual em Teresina</p>
+      <div class="hero-experience" data-gsap-hero-eyebrow>
+        <p class="experience-stat">
+          <span class="sr-only">Mais de 10 anos de experiência</span>
+          <strong class="experience-number" aria-hidden="true">+10</strong>
+          <span class="experience-label" aria-hidden="true">anos de experiência</span>
+        </p>
+        <p class="experience-location">Comunicação visual em Teresina</p>
+      </div>
       <h1 id="hero-title">
         <span class="title-line" data-title-line>Sua marca</span>
         <span class="title-line" data-title-line>merece ser</span>
         <strong class="title-line" data-title-line>vista.</strong>
       </h1>
       <p class="hero-description" data-gsap-hero-copy>
-        Fachadas, letreiros e projetos que transformam negócios em pontos de
-        referência.
+        Fachadas, letreiros e comunicação visual em Teresina — da criação à
+        instalação.
       </p>
       <div class="hero-actions" data-gsap-hero-copy>
         <a
@@ -70,20 +76,16 @@ const proofPoints = [
           <ArrowRight aria-hidden="true" size={18} stroke-width={1.8} />
         </a>
       </div>
-      <div class="hero-trust" data-gsap-hero-copy>
-        <ShieldCheck aria-hidden="true" size={18} />
-        <span>Mais de 10 anos criando presença para marcas e espaços.</span>
-      </div>
     </div>
 
     <figure class="hero-visual" data-gsap-hero-visual>
       <div class="image-shell" data-gsap-hero-card>
-        <div class="facade-scene" data-hero-depth-layer>
+        <div class="facade-scene">
           <Image
             class="facade-layer facade-layer-base"
             src={heroFacade}
-            alt="Fachada da Studio Comunicação Visual ambientada em uma cena noturna azul"
-            widths={[640, 960, 1280, 1600]}
+            alt="Fachada azul da Studio Comunicação Visual com letreiro branco"
+            widths={[640, 960, 1280, 1449]}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
             format="webp"
             quality={82}
@@ -96,7 +98,7 @@ const proofPoints = [
             src={heroFacade}
             alt=""
             aria-hidden="true"
-            widths={[640, 960, 1280, 1600]}
+            widths={[640, 960, 1280, 1449]}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
             format="webp"
             quality={82}
@@ -112,7 +114,7 @@ const proofPoints = [
           <i></i>
           <small>Presença</small>
         </div>
-        <figcaption>Fachada real da Studio <span>•</span> ambientação digital</figcaption>
+        <figcaption>Fachada da Studio <span>•</span> Teresina, PI</figcaption>
       </div>
     </figure>
   </div>
@@ -142,26 +144,10 @@ const proofPoints = [
     hero.dataset.heroLightingState = "ready";
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const finePointer = window.matchMedia("(pointer: fine)");
     let isVisible = false;
     let hasStarted = false;
     let firstFrame = 0;
     let secondFrame = 0;
-    let depthFrame = 0;
-    let pointerX = 0;
-    let pointerY = 0;
-    let heroBounds = hero.getBoundingClientRect();
-
-    const resetDepth = () => {
-      window.cancelAnimationFrame(depthFrame);
-      depthFrame = 0;
-      hero.style.setProperty("--hero-depth-x", "0px");
-      hero.style.setProperty("--hero-depth-y", "0px");
-    };
-
-    const refreshHeroBounds = () => {
-      heroBounds = hero.getBoundingClientRect();
-    };
 
     const updateMotionState = () => {
       const shouldPause = reducedMotion.matches || document.hidden || !isVisible;
@@ -185,35 +171,14 @@ const proofPoints = [
       });
     };
 
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!finePointer.matches || reducedMotion.matches || !isVisible) return;
-
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      if (depthFrame) return;
-
-      depthFrame = window.requestAnimationFrame(() => {
-        depthFrame = 0;
-        const normalizedX = (pointerX - heroBounds.left) / heroBounds.width - 0.5;
-        const normalizedY = (pointerY - heroBounds.top) / heroBounds.height - 0.5;
-        const x = Math.max(-6, Math.min(6, normalizedX * -12));
-        const y = Math.max(-4, Math.min(4, normalizedY * -8));
-
-        hero.style.setProperty("--hero-depth-x", `${x.toFixed(2)}px`);
-        hero.style.setProperty("--hero-depth-y", `${y.toFixed(2)}px`);
-      });
-    };
-
     const handleMotionPreference = () => {
       if (reducedMotion.matches) {
         hero.classList.add("is-lit");
-        resetDepth();
       }
       updateMotionState();
     };
 
     hero.classList.add("lighting-ready");
-    resetDepth();
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -225,10 +190,6 @@ const proofPoints = [
     );
 
     observer.observe(hero);
-    hero.addEventListener("pointerenter", refreshHeroBounds, { passive: true });
-    hero.addEventListener("pointermove", handlePointerMove, { passive: true });
-    hero.addEventListener("pointerleave", resetDepth);
-    window.addEventListener("resize", refreshHeroBounds, { passive: true });
     document.addEventListener("visibilitychange", updateMotionState);
     reducedMotion.addEventListener("change", handleMotionPreference);
 
@@ -240,11 +201,6 @@ const proofPoints = [
         observer.disconnect();
         window.cancelAnimationFrame(firstFrame);
         window.cancelAnimationFrame(secondFrame);
-        window.cancelAnimationFrame(depthFrame);
-        hero.removeEventListener("pointerenter", refreshHeroBounds);
-        hero.removeEventListener("pointermove", handlePointerMove);
-        hero.removeEventListener("pointerleave", resetDepth);
-        window.removeEventListener("resize", refreshHeroBounds);
         document.removeEventListener("visibilitychange", updateMotionState);
         reducedMotion.removeEventListener("change", handleMotionPreference);
       },
@@ -255,8 +211,6 @@ const proofPoints = [
 
 <style>
   .hero {
-    --hero-depth-x: 0px;
-    --hero-depth-y: 0px;
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -305,23 +259,48 @@ const proofPoints = [
     padding-block: 1rem 2rem;
   }
 
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
+  .hero-experience {
+    width: fit-content;
+    max-width: 100%;
     margin: 0 0 1.4rem;
-    color: #90a0b7;
-    font-size: 0.68rem;
-    font-weight: 780;
-    letter-spacing: 0.19em;
-    text-transform: uppercase;
+    padding: 0.1rem 0 0.15rem 1rem;
+    border-left: 2px solid var(--blue-bright);
   }
 
-  .eyebrow span {
-    width: 2.8rem;
-    height: 1px;
-    background: var(--blue-bright);
-    box-shadow: 0 0 14px var(--blue-bright);
+  .experience-stat {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.65rem;
+    margin: 0;
+  }
+
+  .experience-number {
+    flex-shrink: 0;
+    color: var(--blue-bright);
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 3vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.065em;
+    line-height: 1;
+  }
+
+  .experience-label {
+    color: var(--text);
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+  }
+
+  .experience-location {
+    margin: 0.45rem 0 0;
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    text-transform: uppercase;
   }
 
   h1 {
@@ -364,29 +343,17 @@ const proofPoints = [
     margin-top: 2rem;
   }
 
-  .hero-trust {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-top: 1.45rem;
-    color: #748399;
-    font-size: 0.75rem;
-  }
-
-  .hero-trust :global(svg) {
-    color: var(--blue-bright);
-  }
-
   .hero-visual {
     position: relative;
     min-width: 0;
-    margin: 0 -2.5rem 0 0;
+    margin: 0;
   }
 
   .image-shell {
     position: relative;
     isolation: isolate;
-    height: clamp(30rem, 43vw, 39rem);
+    /* A altura integral da foto cabe no card; só as bordas dos muros são cortadas. */
+    aspect-ratio: 6 / 5;
     overflow: hidden;
     border: 1px solid rgb(255 255 255 / 0.12);
     background: #07101c;
@@ -397,10 +364,7 @@ const proofPoints = [
   .facade-scene {
     position: absolute;
     z-index: 0;
-    inset: -1.5%;
-    transform: translate3d(var(--hero-depth-x), var(--hero-depth-y), 0) scale(1.035);
-    transition: transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
-    will-change: transform;
+    inset: 0;
   }
 
   .facade-layer {
@@ -409,7 +373,7 @@ const proofPoints = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 45%;
+    object-position: center;
   }
 
   .facade-layer-base {
@@ -444,10 +408,10 @@ const proofPoints = [
   .facade-sign-glow {
     position: absolute;
     z-index: 3;
-    top: 8%;
-    left: 32%;
-    width: 46%;
-    height: 31%;
+    top: 12%;
+    left: 20%;
+    width: 50%;
+    height: 36%;
     border-radius: 50%;
     background: radial-gradient(ellipse, rgb(92 179 255 / 0.38), rgb(8 120 249 / 0.11) 44%, transparent 72%);
     filter: blur(20px);
@@ -608,9 +572,9 @@ const proofPoints = [
 
   .proof-item p {
     margin: 0.25rem 0 0;
-    color: #748399;
-    font-size: 0.78rem;
-    line-height: 1.45;
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.55;
   }
 
   @keyframes facade-glow-breathe {
@@ -667,12 +631,8 @@ const proofPoints = [
     }
 
     .hero-grid {
-      grid-template-columns: minmax(22rem, 0.88fr) minmax(24rem, 1.12fr);
+      grid-template-columns: minmax(22rem, 0.88fr) minmax(0, 1.12fr);
       gap: 2rem;
-    }
-
-    .hero-visual {
-      margin-right: -5rem;
     }
 
     .proof-strip {
@@ -726,18 +686,9 @@ const proofPoints = [
     }
 
     .image-shell {
-      height: min(27rem, 110vw);
       border-right: 0;
       border-left: 0;
       clip-path: polygon(10% 0, 100% 0, 100% 92%, 88% 100%, 0 100%, 0 10%);
-    }
-
-    .hero.is-lit .facade-scene {
-      animation: facade-mobile-depth 12s ease-in-out 2s infinite alternate;
-    }
-
-    .hero.is-motion-paused .facade-scene {
-      animation-play-state: paused;
     }
 
     .visual-index {
@@ -782,26 +733,12 @@ const proofPoints = [
       font-size: 0.8rem;
     }
 
-    .proof-item p {
-      font-size: 0.78rem;
-    }
-  }
-
-  @keyframes facade-mobile-depth {
-    from {
-      transform: translate3d(-2px, -1px, 0) scale(1.035);
-    }
-
-    to {
-      transform: translate3d(2px, 2px, 0) scale(1.045);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .eyebrow,
+    .hero-experience,
     .hero-description,
     .hero-actions,
-    .hero-trust,
     .title-line,
     .hero-visual,
     .facade-scene,

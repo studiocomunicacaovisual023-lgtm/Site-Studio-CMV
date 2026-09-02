@@ -6,14 +6,35 @@ Os arquivos em `src/assets/company/` foram recuperados do domínio atual da pró
 
 Eles permanecem sujeitos à validação do proprietário e não devem ser tratados automaticamente como fotografias de projetos executados.
 
+## Galeria de equipamentos na seção A Studio
+
+- Imagem inicial preservada: `src/assets/company/studio-impressora.png`, já usada no site. A galeria não afirma um modelo específico além da marca visível.
+- Seis novos arquivos em `src/assets/generated/equipment/`: router CNC, plotter de grande formato, impressora de alta resolução, corte a laser, gravação a laser em metal e impressora da categoria Konica para gráfica rápida.
+- Fonte da seleção: lista enviada pelo responsável em 2 de setembro de 2026, no arquivo `codex-clipboard-892071c4-e8a5-48ee-823f-34716a094a92.png`.
+- Produção das novas imagens: uma chamada da ferramenta integrada por equipamento, sem CLI e sem alteração posterior do PNG. Todas têm 1448×1086 px (4:3) e são entregues pelo Astro em WebP responsivo.
+- Natureza: representações ilustrativas das categorias informadas. Sem fotos ou modelos exatos dos equipamentos, as imagens não comprovam o acervo, as dimensões nem as capacidades técnicas das máquinas reais. A legenda “Imagem ilustrativa” acompanha as seis novas imagens, sem selo sobre o equipamento.
+- Apresentação: imagem inteira com `object-fit: contain`, troca a cada 5 segundos, seleção manual, pausa/retomada, pausa fora da tela ou em aba oculta e respeito a movimento reduzido. A seleção manual fica parada até o visitante retomar.
+- Refinamento do card: aproximadamente 17% mais largo no desktop, área de imagem ampliada, selo superior mais compacto e pausa sem fundo junto aos indicadores. A foto de detalhe ocupa uma área menor; a composição móvel mantém dimensões próprias.
+- Arquivos e prompts exatos: [registro das imagens](prompts/equipment-gallery-images.md).
+
+As fotografias reais e os modelos devem substituir as representações quando forem enviados. O selo “Acervo Studio” permanece associado apenas à fotografia menor já existente, fora da galeria.
+
 ## Hero atual
+
+- Arquivo: `src/assets/company/studio-facade-hero-daylight.png`
+- Fonte: imagem fornecida pelo responsável do projeto em 2 de setembro de 2026, no arquivo `ChatGPT Image 2 de set. de 2026, 11_00_02.png`.
+- Tratamento nesta integração: cópia integral do PNG de 1449×1086 px, sem retoque ou recorte destrutivo. O Astro entrega versões WebP responsivas, limitadas à largura original.
+- Enquadramento: card responsivo com proporção 6:5, `object-fit: cover` e centralização. A altura integral da foto é mantida, com corte apenas nas faixas externas dos muros laterais. O zoom interno e a aproximação animada foram removidos para preservar o topo, a entrada e a base da fachada em todos os tamanhos; a iluminação e os movimentos do card inteiro permanecem.
+- Uso: Hero da Home, identificada como “Fachada da Studio • Teresina, PI”. A procedência foi informada pelo responsável; esta integração não verifica tratamentos anteriores da imagem.
+
+## Hero anterior e laboratórios
 
 - Arquivo: `src/assets/company/studio-facade-hero-v3.png`
 - Fonte primária: fotografia da fachada atual fornecida pelo responsável do projeto.
 - Tratamento: ambientação digital gerada com a ferramenta integrada de edição de imagens, preservando a arquitetura e a identidade visual da fachada.
-- Uso: Hero da Home e laboratórios experimentais, identificada na interface como “Fachada real da Studio • ambientação digital”.
+- Uso: preservada nos laboratórios experimentais e como referência da Hero anterior. Não é mais carregada pela Hero da Home.
 
-A versão `studio-facade-hero-v2.png` foi preservada no repositório apenas para comparação e rollback.
+O arquivo anterior foi preservado para comparação e rollback.
 
 A fotografia original continua sendo a referência autoritativa. A versão ambientada não deve ser apresentada como registro documental da iluminação real instalada.
 
@@ -25,6 +46,19 @@ A fotografia original continua sendo a referência autoritativa. A versão ambie
 - Uso: primeiro card de serviço, “Fachadas”, identificada na interface como “Imagem de referência”.
 
 Até que a procedência e a execução do projeto sejam confirmadas pela Studio, esta imagem não deve ser apresentada como registro de um trabalho realizado pela empresa.
+
+## Imagem ilustrativa para o destaque Adesivos
+
+- Arquivo atual: `src/assets/generated/studio-fleet-wrap-mixed.png`
+- Fonte: composição editada em 2 de setembro de 2026 com a ferramenta integrada de geração de imagens, mantendo o carro iNET da versão anterior e substituindo os veículos do fundo por uma van Açaí Gurupi e um ônibus preto e azul, a partir das referências enviadas pelo responsável.
+- Referências recebidas: `codex-clipboard-00642cdb-3925-45cd-abfb-fbb1a42fe4e0.png` (van) e `codex-clipboard-5d848373-81d1-49cd-90dc-5e024c83fb11.png` (ônibus). O responsável informou que ambos são serviços realizados pela Studio.
+- Dimensões efetivas: 1672×941 px, aproximadamente 16:9. O PNG foi integrado sem ampliação artificial; o Astro entrega versões WebP responsivas até a largura original.
+- Uso: segundo destaque da seção Serviços, “Adesivos”, com foco em padronização de frotas. O enquadramento é centralizado e o degradê inferior preserva a leitura do texto.
+- Interface: sem tag sobre a imagem, conforme solicitação do responsável. O texto alternativo descreve a composição e os três tipos de veículo.
+- Prompt e parâmetros atuais: [registro da composição](prompts/fleet-wrap-mixed-image.md).
+- Versão anterior: `src/assets/generated/studio-fleet-wrap.png`, com três carros iNET, preservada para comparação. [Registro da primeira geração](prompts/fleet-wrap-image.md).
+
+As fotografias enviadas são as referências dos envelopamentos; a reunião dos veículos no mesmo pátio é uma composição digital. Ela não documenta os três veículos juntos nem substitui os originais como registro fiel de cada aplicação. Alguns detalhes pequenos dos adesivos foram simplificados pela geração.
 
 ## Imagem enviada para o projeto Fachada comercial
 
