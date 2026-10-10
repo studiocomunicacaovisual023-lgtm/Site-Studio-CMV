@@ -16,7 +16,7 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const socialImage = new URL("/og.png", Astro.site);
+const socialImage = new URL("/og-studio.jpg", Astro.site);
 const logoImage = new URL(studioSymbol.src, Astro.site);
 const localBusiness = {
   "@context": "https://schema.org",
@@ -60,6 +60,8 @@ const localBusiness = {
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={company.name} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:secure_url" content={socialImage} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Sua marca merece ser vista — Studio Comunicação Visual, Teresina" />
@@ -67,6 +69,7 @@ const localBusiness = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content="Sua marca merece ser vista — Studio Comunicação Visual, Teresina" />
     <title>{title}</title>
     <script is:inline type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
   </head>

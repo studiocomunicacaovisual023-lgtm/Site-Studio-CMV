@@ -1,5 +1,14 @@
 # Fontes das imagens provisórias
 
+## Prévia de compartilhamento (Open Graph)
+
+- Arquivo usado: `public/og-studio.jpg`, derivado da composição existente em `public/og.png`.
+- Otimização em 10 de outubro de 2026: JPEG com qualidade 88, sem transparência, mantendo 1200×630 px. O arquivo passou de 1.063.104 para 114.149 bytes.
+- O PNG original continua disponível para preservar links anteriores.
+- URL pública: `https://www.studiocmv.com.br/og-studio.jpg`; o domínio com `www` corresponde ao destino final da hospedagem. Canonical, Open Graph, Twitter Card, JSON-LD e sitemap usam esse mesmo domínio.
+- A validação pública inicial encontrou HTTP 200 tanto no HTML quanto no PNG, inclusive ao solicitar o HTML com o agente `facebookexternalhit`. O redirecionamento do domínio sem `www` e o peso do PNG foram melhorados, mas não comprovam por si só a causa da prévia sem imagem no WhatsApp.
+- Para verificar a publicação: confirmar HTTP 200 e `Content-Type: image/jpeg` no JPEG, conferir `og:image` no HTML público e testar um compartilhamento novo. Prévias já armazenadas pelo aplicativo podem precisar de nova leitura; mudar a URL da imagem não garante a invalidação do cache do link.
+
 ## Site atual da Studio
 
 Os arquivos em `src/assets/company/` foram recuperados do domínio atual da própria empresa, `studiocmv.com.br`, para preservar ativos já publicados durante a fundação do novo site.

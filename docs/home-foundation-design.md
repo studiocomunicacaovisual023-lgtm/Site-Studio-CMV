@@ -12,7 +12,7 @@
 
 ## Assumptions
 
-- O domínio canônico permanece `https://studiocmv.com.br`.
+- O domínio canônico é `https://www.studiocmv.com.br`, conforme o endereço final da hospedagem. O domínio sem `www` redireciona para ele.
 - Os telefones, e-mail e endereço publicados no site atual serão usados provisoriamente até validação do proprietário.
 - Imagens do site atual da própria empresa podem ser reutilizadas como acervo inicial.
 - Imagens de banco, quando necessárias, serão identificadas como referências e nunca como projetos executados.
