@@ -44,6 +44,7 @@ const navigation = [
     <address>
       <h2>Contato</h2>
       <a href={`tel:${company.phoneHref}`}><Phone aria-hidden="true" size={15} /> {company.phoneDisplay}</a>
+      <a href={`tel:${company.landlineHref}`} aria-label={`Telefone fixo: ${company.landlineDisplay}`}><Phone aria-hidden="true" size={15} /> {company.landlineDisplay}</a>
       <a href={whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle aria-hidden="true" size={15} /> WhatsApp</a>
       <a href={company.instagramUrl} target="_blank" rel="noreferrer"><InstagramIcon size={15} /> {company.instagramHandle}</a>
       <a href={`mailto:${company.email}`}><Mail aria-hidden="true" size={15} /> {company.email}</a>

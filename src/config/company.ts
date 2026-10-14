@@ -4,6 +4,8 @@ export const company = {
   foundingYear: 2012,
   phoneDisplay: "(86) 98883-8917",
   phoneHref: "+5586988838917",
+  landlineDisplay: "(86) 3200-8612",
+  landlineHref: "+558632008612",
   email: "studiocmv@hotmail.com",
   instagramUrl: "https://www.instagram.com/studio_comunicacao_visual/",
   instagramHandle: "@studio_comunicacao_visual",
