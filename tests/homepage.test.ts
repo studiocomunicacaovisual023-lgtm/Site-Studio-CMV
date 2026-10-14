@@ -141,17 +141,17 @@ describe("homepage comercial", () => {
   });
 
   it("usa a fachada diurna fornecida na Hero sem ampliar o arquivo original", async () => {
-    const heroAsset = resolve("src/assets/company/studio-facade-hero-daylight.png");
+    const heroAsset = resolve("src/assets/company/studio-facade-hero-real.jpg");
     const heroSource = readSource("src/components/sections/Hero.astro");
 
     expect(existsSync(heroAsset), `ativo ausente: ${heroAsset}`).toBe(true);
     const metadata = await sharp(heroAsset).metadata();
-    expect(metadata.width).toBe(1449);
-    expect(metadata.height).toBe(1086);
-    expect(heroSource).toContain("studio-facade-hero-daylight.png");
+    expect(metadata.width).toBe(960);
+    expect(metadata.height).toBe(1280);
+    expect(heroSource).toContain("studio-facade-hero-real.jpg");
     expect(heroSource).not.toContain("studio-facade-hero-v3.png");
-    expect(heroSource.match(/widths=\{\[640, 960, 1280, 1449\]\}/g)).toHaveLength(2);
-    expect(heroSource).toContain("Fachada azul da Studio Comunicação Visual com letreiro branco");
+    expect(heroSource.match(/widths=\{\[480, 640, 960\]\}/g)).toHaveLength(2);
+    expect(heroSource).toContain("Fachada da Studio Comunicação Visual em Teresina");
     expect(heroSource).not.toContain("cena noturna");
     expect(heroSource).not.toContain("ambientação digital");
   });
@@ -199,11 +199,11 @@ describe("homepage comercial", () => {
       "utf8",
     );
 
-    expect(heroSource).toContain("aspect-ratio: 6 / 5");
+    expect(heroSource).toContain("aspect-ratio: 11 / 10");
     expect(heroSource).not.toContain("height: clamp(30rem, 43vw, 39rem)");
     expect(heroSource).not.toContain("height: min(27rem, 110vw)");
     expect(heroSource).toContain("object-fit: cover");
-    expect(heroSource).toContain("object-position: center");
+    expect(heroSource).toContain("object-position: center 28%");
     expect(heroSource).toMatch(/\.facade-scene\s*\{[^}]*inset: 0;/);
     expect(heroSource).not.toContain("--facade-crop-scale");
     expect(heroSource).not.toContain("--hero-depth-x");
@@ -220,10 +220,14 @@ describe("homepage comercial", () => {
     expect(aspect).not.toBeNull();
     const ratio = Number(aspect![1]) / Number(aspect![2]);
     const { width = 0, height = 0 } = await sharp(
-      resolve("src/assets/company/studio-facade-hero-daylight.png"),
+      resolve("src/assets/company/studio-facade-hero-real.jpg"),
     ).metadata();
-    // Limites da fachada na imagem fornecida, excluindo os muros vizinhos.
-    const facade = { left: 165, top: 10, right: 1288, bottom: 986 };
+    // Limites da loja na foto vertical, excluindo céu, calçada e vizinhos.
+    const facade = { left: 10, top: 118, right: 735, bottom: 986 };
+    const verticalPosition = Number(
+      heroSource.match(/object-position:\s*center\s+(\d+)%/)?.[1],
+    ) / 100;
+    expect(Number.isFinite(verticalPosition)).toBe(true);
 
     for (const cardWidth of [320, 390, 480, 600, 768]) {
       const cardHeight = cardWidth / ratio;
@@ -231,7 +235,7 @@ describe("homepage comercial", () => {
       const visibleWidth = cardWidth / fit;
       const visibleHeight = cardHeight / fit;
       const left = (width - visibleWidth) / 2;
-      const top = (height - visibleHeight) / 2;
+      const top = (height - visibleHeight) * verticalPosition;
 
       expect(left).toBeLessThanOrEqual(facade.left);
       expect(top).toBeLessThanOrEqual(facade.top);

@@ -37,11 +37,19 @@ As fotografias reais e os modelos devem substituir as representações quando fo
 
 ## Hero atual
 
+- Arquivo: `src/assets/company/studio-facade-hero-real.jpg`.
+- Fonte: fotografia fornecida pelo responsável em 14 de outubro de 2026, no arquivo `WhatsApp Image 2026-10-14 at 09.47.47 (1).jpeg`.
+- Integração: cópia integral do JPEG de 960×1280 px, sem retoque. O Astro gera WebP responsivo, limitado à resolução original.
+- Enquadramento: card 11:10 com `object-fit: cover` e `object-position: center 28%`, priorizando o letreiro e a entrada, com menos céu e calçada. A mesma posição é aplicada às duas camadas de iluminação, no desktop e no celular.
+- Uso: Hero da Home, identificada como “Fachada da Studio • Teresina, PI”.
+
+## Hero diurna anterior
+
 - Arquivo: `src/assets/company/studio-facade-hero-daylight.png`
 - Fonte: imagem fornecida pelo responsável do projeto em 2 de setembro de 2026, no arquivo `ChatGPT Image 2 de set. de 2026, 11_00_02.png`.
 - Tratamento nesta integração: cópia integral do PNG de 1449×1086 px, sem retoque ou recorte destrutivo. O Astro entrega versões WebP responsivas, limitadas à largura original.
 - Enquadramento: card responsivo com proporção 6:5, `object-fit: cover` e centralização. A altura integral da foto é mantida, com corte apenas nas faixas externas dos muros laterais. O zoom interno e a aproximação animada foram removidos para preservar o topo, a entrada e a base da fachada em todos os tamanhos; a iluminação e os movimentos do card inteiro permanecem.
-- Uso: Hero da Home, identificada como “Fachada da Studio • Teresina, PI”. A procedência foi informada pelo responsável; esta integração não verifica tratamentos anteriores da imagem.
+- Uso anterior: Hero da Home até a substituição pela fotografia de 14 de outubro de 2026. O arquivo permanece disponível como referência; a procedência foi informada pelo responsável.
 
 ## Hero anterior e laboratórios
 

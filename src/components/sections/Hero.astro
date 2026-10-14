@@ -7,7 +7,7 @@ import {
   Wrench,
 } from "@lucide/astro";
 import { Image } from "astro:assets";
-import heroFacade from "../../assets/company/studio-facade-hero-daylight.png";
+import heroFacade from "../../assets/company/studio-facade-hero-real.jpg";
 import { whatsappUrl } from "../../config/company";
 
 const proofPoints = [
@@ -84,8 +84,8 @@ const proofPoints = [
           <Image
             class="facade-layer facade-layer-base"
             src={heroFacade}
-            alt="Fachada azul da Studio Comunicação Visual com letreiro branco"
-            widths={[640, 960, 1280, 1449]}
+            alt="Fachada da Studio Comunicação Visual em Teresina, com revestimento azul, letreiro e entrada de vidro"
+            widths={[480, 640, 960]}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
             format="webp"
             quality={82}
@@ -98,7 +98,7 @@ const proofPoints = [
             src={heroFacade}
             alt=""
             aria-hidden="true"
-            widths={[640, 960, 1280, 1449]}
+            widths={[480, 640, 960]}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
             format="webp"
             quality={82}
@@ -352,8 +352,8 @@ const proofPoints = [
   .image-shell {
     position: relative;
     isolation: isolate;
-    /* A altura integral da foto cabe no card; só as bordas dos muros são cortadas. */
-    aspect-ratio: 6 / 5;
+    /* Enquadra a fachada na foto vertical, reduzindo céu e calçada. */
+    aspect-ratio: 11 / 10;
     overflow: hidden;
     border: 1px solid rgb(255 255 255 / 0.12);
     background: #07101c;
@@ -373,7 +373,7 @@ const proofPoints = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
+    object-position: center 28%;
   }
 
   .facade-layer-base {
