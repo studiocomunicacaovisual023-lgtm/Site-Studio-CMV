@@ -1,5 +1,12 @@
 # Fontes das imagens provisórias
 
+## Logo oficial atual
+
+- Arquivo: `src/assets/company/studio-logo-final.png`.
+- Fonte: `LOGO STUDIO FINAL (1).png`, fornecido pelo responsável em 14 de outubro de 2026.
+- PNG original de 3419×962 px, com transparência preservada, sem redesenho ou alteração de cores.
+- Uso: logo completa no cabeçalho, rodapé e dados estruturados da Home. O Astro entrega versões responsivas otimizadas; o símbolo quadrado permanece como favicon.
+
 ## Prévia de compartilhamento (Open Graph)
 
 - Arquivo usado: `public/og-studio.jpg`, derivado da composição existente em `public/og.png`.

@@ -1,5 +1,6 @@
 ---
 import studioSymbol from "../assets/company/studio-symbol.png";
+import studioLogo from "../assets/company/studio-logo-final.png";
 import MotionObserver from "../components/ui/MotionObserver.astro";
 import { company } from "../config/company";
 import "../styles/global.css";
@@ -17,7 +18,7 @@ const {
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL("/og-studio.jpg", Astro.site);
-const logoImage = new URL(studioSymbol.src, Astro.site);
+const logoImage = new URL(studioLogo.src, Astro.site);
 const localBusiness = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",

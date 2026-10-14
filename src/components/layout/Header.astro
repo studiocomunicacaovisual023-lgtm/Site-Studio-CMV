@@ -1,7 +1,7 @@
 ---
 import { ArrowUpRight } from "@lucide/astro";
 import { Image } from "astro:assets";
-import studioSymbol from "../../assets/company/studio-symbol.png";
+import studioLogo from "../../assets/company/studio-logo-final.png";
 import { whatsappUrl } from "../../config/company";
 
 const links = [
@@ -17,11 +17,7 @@ const links = [
 <header class="site-header" data-site-header data-header-state="top">
   <div class="container header-inner">
     <a class="brand" href="#inicio" aria-label="Studio Comunicação Visual — início">
-      <Image src={studioSymbol} alt="" width={48} height={48} loading="eager" />
-      <span class="brand-copy">
-        <strong>Studio</strong>
-        <small>Comunicação visual</small>
-      </span>
+      <Image src={studioLogo} alt="Studio Comunicação Visual" width={512} widths={[256, 512, 768]} sizes="(max-width: 1088px) 208px, 240px" loading="eager" />
     </a>
 
     <nav class="desktop-nav" aria-label="Navegação principal">
@@ -200,8 +196,8 @@ const links = [
   }
 
   .brand :global(img) {
-    width: 2.8rem;
-    height: 2.8rem;
+    width: 15rem;
+    height: auto;
     filter: drop-shadow(0 0 16px rgb(42 157 255 / 0.22));
     transition:
       width 240ms cubic-bezier(0.2, 0.7, 0.2, 1),
@@ -210,43 +206,8 @@ const links = [
   }
 
   .site-header.is-scrolled .brand :global(img) {
-    width: 2.35rem;
-    height: 2.35rem;
+    width: 13rem;
     filter: drop-shadow(0 0 12px rgb(42 157 255 / 0.18));
-  }
-
-  .brand-copy {
-    display: grid;
-    line-height: 1;
-  }
-
-  .brand-copy strong {
-    font-family: var(--font-display);
-    font-size: 1.34rem;
-    font-weight: 720;
-    letter-spacing: -0.055em;
-    transition: font-size 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-
-  .site-header.is-scrolled .brand-copy strong {
-    font-size: 1.18rem;
-  }
-
-  .brand-copy small {
-    margin-top: 0.32rem;
-    color: #99a6b8;
-    font-size: 0.56rem;
-    font-weight: 760;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    transition:
-      margin-top 240ms ease,
-      opacity 240ms ease;
-  }
-
-  .site-header.is-scrolled .brand-copy small {
-    margin-top: 0.22rem;
-    opacity: 0.78;
   }
 
   .desktop-nav {
@@ -394,7 +355,11 @@ const links = [
     text-align: center;
   }
 
-  @media (max-width: 60rem) {
+  @media (max-width: 68rem) {
+    .brand :global(img) {
+      width: 13rem;
+    }
+
     .desktop-nav,
     .header-cta {
       display: none;

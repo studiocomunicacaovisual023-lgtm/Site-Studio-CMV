@@ -1,7 +1,7 @@
 ---
 import { Mail, MapPin, MessageCircle, Phone } from "@lucide/astro";
 import { Image } from "astro:assets";
-import studioSymbol from "../../assets/company/studio-symbol.png";
+import studioLogo from "../../assets/company/studio-logo-final.png";
 import { company, whatsappUrl } from "../../config/company";
 import InstagramIcon from "../ui/InstagramIcon.astro";
 
@@ -19,8 +19,7 @@ const navigation = [
   <div class="container footer-grid">
     <div class="brand-column">
       <a class="brand" href="#inicio" aria-label="Studio Comunicação Visual — voltar ao início">
-        <Image src={studioSymbol} alt="" width={54} height={54} loading="lazy" />
-        <span><strong>Studio</strong><small>Comunicação visual</small></span>
+        <Image src={studioLogo} alt="Studio Comunicação Visual" width={512} widths={[256, 512, 768]} sizes="256px" loading="lazy" />
       </a>
       <p>Soluções que colocam sua marca no lugar certo: em evidência.</p>
     </div>
@@ -71,33 +70,14 @@ const navigation = [
 
   .brand {
     display: inline-flex;
+    max-width: 100%;
     align-items: center;
     gap: 0.7rem;
   }
 
   .brand :global(img) {
-    width: 3.2rem;
-    height: 3.2rem;
-  }
-
-  .brand > span {
-    display: grid;
-    line-height: 1;
-  }
-
-  .brand strong {
-    font-family: var(--font-display);
-    font-size: 1.45rem;
-    letter-spacing: -0.05em;
-  }
-
-  .brand small {
-    margin-top: 0.3rem;
-    color: #8795a8;
-    font-size: 0.7rem;
-    font-weight: 760;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    width: 16rem;
+    height: auto;
   }
 
   .brand-column > p {
