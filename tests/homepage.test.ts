@@ -26,7 +26,7 @@ describe("homepage comercial", () => {
       /<p\b[^>]*class="hero-description"[^>]*>([\s\S]*?)<\/p>/,
     )?.[1]?.replace(/\s+/g, " ").trim();
     expect(heroDescription).toBe(
-      "Fachadas, letreiros e comunicação visual em Teresina — da criação à instalação.",
+      "Transformamos ideias em soluções de comunicação visual. Produzimos fachadas, letras-caixa, adesivos, banners, impressões digitais em alta resolução, materiais gráficos e brindes personalizados para dar mais visibilidade ao seu negócio.",
     );
   });
 
