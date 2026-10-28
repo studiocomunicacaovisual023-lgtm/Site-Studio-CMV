@@ -3,11 +3,14 @@ import {
   ArrowRight,
   BadgeCheck,
   MessagesSquare,
+  Pause,
+  Play,
   Sparkles,
   Wrench,
 } from "@lucide/astro";
 import { Image } from "astro:assets";
 import heroFacade from "../../assets/company/studio-facade-hero-real.jpg";
+import heroFacadeNight from "../../assets/company/studio-facade-hero-night.png";
 import { whatsappUrl } from "../../config/company";
 
 const proofPoints = [
@@ -82,7 +85,9 @@ const proofPoints = [
 
     <figure class="hero-visual" data-gsap-hero-visual>
       <div class="image-shell" data-gsap-hero-card>
-        <div class="facade-scene">
+        <hero-carousel class="facade-carousel" role="region" aria-roledescription="carrossel" aria-label="Fachada da Studio de dia e à noite">
+        <div class="hero-slides" data-hero-slides aria-live="off">
+        <div class="facade-scene is-active" data-hero-slide role="group" aria-roledescription="slide" aria-label="1 de 2: fachada durante o dia" aria-hidden="false">
           <Image
             class="facade-layer facade-layer-base"
             src={heroFacade}
@@ -107,15 +112,49 @@ const proofPoints = [
             loading="eager"
           />
         </div>
+        <div class="facade-scene facade-scene-night" data-hero-slide role="group" aria-roledescription="slide" aria-label="2 de 2: fachada iluminada à noite" aria-hidden="true">
+          <Image
+            class="facade-layer facade-layer-base"
+            src={heroFacadeNight}
+            alt="Fachada da Studio Comunicação Visual à noite, com letreiro e contornos iluminados"
+            widths={[640, 960, 1448, 2172]}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
+            format="webp"
+            quality={82}
+            loading="eager"
+            fetchpriority="low"
+          />
+          <Image
+            class="facade-layer facade-layer-lit"
+            data-hero-light-layer
+            src={heroFacadeNight}
+            alt=""
+            aria-hidden="true"
+            widths={[640, 960, 1448, 2172]}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 58vw, 52vw"
+            format="webp"
+            quality={82}
+            loading="eager"
+            fetchpriority="low"
+          />
+        </div>
+        </div>
+        <div class="visual-index" data-hero-controls hidden>
+          <span data-hero-index aria-hidden="true">01 / 02</span>
+          <div class="hero-pagination" role="group" aria-label="Escolher imagem da fachada">
+            <button type="button" data-hero-select="0" aria-label="Ver fachada durante o dia" aria-current="true"><i></i></button>
+            <button type="button" data-hero-select="1" aria-label="Ver fachada iluminada à noite"><i></i></button>
+          </div>
+          <button class="hero-playback" type="button" data-hero-toggle aria-label="Pausar apresentação">
+            <Pause class="hero-pause-icon" size={13} aria-hidden="true" />
+            <Play class="hero-play-icon" size={13} aria-hidden="true" />
+          </button>
+        </div>
+        </hero-carousel>
         <div class="image-wash" aria-hidden="true"></div>
         <div class="facade-sign-glow" aria-hidden="true"></div>
         <div class="lighting-sweep" aria-hidden="true"></div>
         <div class="signal-line" aria-hidden="true"><span></span></div>
-        <div class="visual-index" aria-hidden="true">
-          <span>01</span>
-          <i></i>
-          <small>Presença</small>
-        </div>
         <figcaption>Fachada da Studio <span>•</span> Teresina, PI</figcaption>
       </div>
     </figure>
@@ -136,6 +175,25 @@ const proofPoints = [
 </section>
 
 <script>
+  import { initHeroCarousel } from "../../features/hero-carousel/hero-carousel";
+
+  class HeroCarousel extends HTMLElement {
+    private cleanup: (() => void) | undefined;
+
+    connectedCallback() {
+      this.cleanup ??= initHeroCarousel(this);
+    }
+
+    disconnectedCallback() {
+      this.cleanup?.();
+      this.cleanup = undefined;
+    }
+  }
+
+  if (!customElements.get("hero-carousel")) {
+    customElements.define("hero-carousel", HeroCarousel);
+  }
+
   const heroLightingElements = document.querySelectorAll<HTMLElement>(
     "[data-hero-lighting]",
   );
@@ -363,10 +421,40 @@ const proofPoints = [
     box-shadow: -40px 40px 100px rgb(0 0 0 / 0.48);
   }
 
+  .facade-carousel,
+  .hero-slides {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-slides {
+    overflow: hidden;
+  }
+
   .facade-scene {
     position: absolute;
     z-index: 0;
     inset: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+  }
+
+  .facade-scene.is-active,
+  .facade-scene.is-exiting {
+    visibility: visible;
+  }
+
+  .facade-scene.is-active {
+    transform: translateX(0);
+  }
+
+  .facade-scene.is-exiting {
+    transform: translateX(-100%);
+  }
+
+  .facade-carousel[data-ready="true"] .facade-scene.is-active,
+  .facade-carousel[data-ready="true"] .facade-scene.is-exiting {
+    transition: transform 850ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
   .facade-layer {
@@ -376,6 +464,10 @@ const proofPoints = [
     height: 100%;
     object-fit: cover;
     object-position: center 28%;
+  }
+
+  .facade-scene-night .facade-layer {
+    object-position: center 40%;
   }
 
   .facade-layer-base {
@@ -497,29 +589,65 @@ const proofPoints = [
     left: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.2rem;
     font-family: var(--font-display);
     text-shadow: 0 2px 12px rgb(0 0 0 / 0.72);
   }
 
   .visual-index span {
     color: white;
-    font-size: 0.72rem;
+    min-width: 2.6rem;
+    font-size: 0.6rem;
+    font-variant-numeric: tabular-nums;
   }
 
-  .visual-index i {
-    width: 3.7rem;
-    height: 1px;
+  .visual-index[hidden],
+  .hero-playback[hidden] {
+    display: none;
+  }
+
+  .hero-pagination {
+    display: flex;
+  }
+
+  .hero-pagination button,
+  .hero-playback {
+    display: grid;
+    width: 1.65rem;
+    height: 2rem;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0.25rem;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+  }
+
+  .hero-pagination i {
+    width: 0.36rem;
+    height: 0.36rem;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.5);
+    transition: background 180ms ease, box-shadow 180ms ease;
+  }
+
+  .hero-pagination [aria-current="true"] i {
     background: var(--blue-bright);
-    box-shadow: 0 0 14px var(--blue-bright);
+    box-shadow: 0 0 12px var(--blue-bright);
   }
 
-  .visual-index small {
-    color: #aab6c7;
-    font-size: 0.57rem;
-    font-weight: 680;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .hero-playback:hover {
+    color: var(--blue-bright);
+  }
+
+  .hero-playback :global(.hero-play-icon),
+  .facade-carousel[data-autoplay="false"] .hero-playback :global(.hero-pause-icon) {
+    display: none;
+  }
+
+  .facade-carousel[data-autoplay="false"] .hero-playback :global(.hero-play-icon) {
+    display: block;
   }
 
   .proof-strip {
@@ -699,7 +827,8 @@ const proofPoints = [
 
     figcaption {
       right: var(--gutter);
-      max-width: 13rem;
+      max-width: 46%;
+      font-size: 0.52rem;
       text-align: right;
     }
 

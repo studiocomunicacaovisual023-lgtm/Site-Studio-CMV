@@ -43,6 +43,14 @@ As fotografias reais e os modelos devem substituir as representações quando fo
 - Enquadramento: card 11:10 com `object-fit: cover` e `object-position: center 28%`, priorizando o letreiro e a entrada, com menos céu e calçada. A mesma posição é aplicada às duas camadas de iluminação, no desktop e no celular.
 - Uso: Hero da Home, identificada como “Fachada da Studio • Teresina, PI”.
 
+### Segunda imagem da Hero — fachada iluminada
+
+- Arquivo: `src/assets/company/studio-facade-hero-night.png`.
+- Fonte: `site.png`, enviado pelo responsável em 28 de outubro de 2026 (2172×2896 px). Cópia integral do arquivo fornecido, sem geração ou retoque nesta integração; a integração não verifica tratamentos anteriores da imagem.
+- Entrega: WebP responsivo pelo Astro, sem ampliar a resolução original. Enquadramento `center 40%` no mesmo card 11:10, preservando o letreiro e a entrada.
+- Apresentação: a foto diurna permanece como primeira; as duas alternam a cada 5 segundos com deslizamento de 850 ms para a esquerda. Ambas são carregadas antes do início da rotação; a imagem diurna mantém prioridade alta e a noturna usa prioridade baixa.
+- Controles discretos permitem seleção e pausa. Pausa fora da tela, em aba oculta, no hover e ao navegar pelos controles; a preferência por movimento reduzido desativa a rotação automática e a transição. Sem JavaScript, a primeira imagem permanece estática.
+
 ## Hero diurna anterior
 
 - Arquivo: `src/assets/company/studio-facade-hero-daylight.png`

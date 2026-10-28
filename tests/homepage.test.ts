@@ -156,6 +156,25 @@ describe("homepage comercial", () => {
     expect(heroSource).not.toContain("ambientação digital");
   });
 
+  it("inclui a nova fachada noturna e mantém a diurna como primeira imagem da Hero", async () => {
+    const heroAsset = resolve("src/assets/company/studio-facade-hero-night.png");
+    const metadata = await sharp(heroAsset).metadata();
+    expect(metadata.width).toBe(2172);
+    expect(metadata.height).toBe(2896);
+
+    const html = readFileSync(homepagePath, "utf8");
+    const carousel = html.match(/<hero-carousel\b[\s\S]*?<\/hero-carousel>/)?.[0] ?? "";
+    expect(carousel.match(/data-hero-slide\s/g)).toHaveLength(2);
+    expect(carousel.indexOf("studio-facade-hero-real")).toBeLessThan(
+      carousel.indexOf("studio-facade-hero-night"),
+    );
+    expect(carousel).toContain('aria-label="1 de 2: fachada durante o dia" aria-hidden="false"');
+    expect(carousel).toContain('aria-label="2 de 2: fachada iluminada à noite" aria-hidden="true"');
+    expect(carousel.match(/fetchpriority="high"/g)).toHaveLength(1);
+    expect(carousel).toContain('aria-label="Pausar apresentação"');
+    expect(carousel).toContain('aria-label="Ver fachada iluminada à noite"');
+  });
+
   it("preserva a fachada vertical anterior nos laboratórios", async () => {
     const heroAsset = resolve(
       "src/assets/company/studio-facade-hero-v3.png",
